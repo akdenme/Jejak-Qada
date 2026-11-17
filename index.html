@@ -12,7 +12,7 @@
 /* Layout: one column. Backup banner, hero total, today's goal, five prayer rows (hues follow the day from dawn to night), history, backup. Popups for adding, editing and logging by date. */
 :root{
   --bg:#F2F5F3; --surface:#FFFFFF; --surface2:#E7EDEA; --fg:#14211D; --muted:#566862; --line:#D3DDD8;
-  --accent:#1B6B58; --accent-fg:#FFFFFF; --danger:#B3362E;
+  --accent:#1B6B58; --accent-fg:#FFFFFF; --danger:#B3362E; --on-danger:#FFFFFF;
   --p-subuh:#4B5BB5; --p-zohor:#B8901A; --p-asar:#CC7A22; --p-maghrib:#BC4A58; --p-isyak:#2F3B73;
   --f-display:'Fraunces',Georgia,'Times New Roman',serif;
   --f-body:'Instrument Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
@@ -20,14 +20,14 @@
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --bg:#0E1613; --surface:#16211D; --surface2:#1F2D28; --fg:#E6EFEB; --muted:#9AADA6; --line:#2B3B35;
-    --accent:#4FB79A; --accent-fg:#06241C; --danger:#F07A70;
+    --accent:#4FB79A; --accent-fg:#06241C; --danger:#F07A70; --on-danger:#2A0A07;
     --p-subuh:#8F9CFF; --p-zohor:#E0B83F; --p-asar:#F0A04B; --p-maghrib:#E8788A; --p-isyak:#8C9BDB;
     color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
   --bg:#0E1613; --surface:#16211D; --surface2:#1F2D28; --fg:#E6EFEB; --muted:#9AADA6; --line:#2B3B35;
-  --accent:#4FB79A; --accent-fg:#06241C; --danger:#F07A70;
+  --accent:#4FB79A; --accent-fg:#06241C; --danger:#F07A70; --on-danger:#2A0A07;
   --p-subuh:#8F9CFF; --p-zohor:#E0B83F; --p-asar:#F0A04B; --p-maghrib:#E8788A; --p-isyak:#8C9BDB;
   color-scheme:dark;
 }
@@ -114,6 +114,32 @@ input[type=number]{font-variant-numeric:tabular-nums}
 .importbox{background:var(--surface2);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:10px}
 textarea{width:100%;min-height:110px;border:1px solid var(--line);border-radius:10px;background:var(--bg);padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px}
 .status{color:var(--muted);font-size:13px;text-align:center}
+.trk-nav{display:flex;align-items:center;gap:8px}
+.trk-date{font-family:var(--f-display);font-weight:600;font-size:18px;flex:1;min-width:0;text-align:center}
+.trow{padding:12px 0;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
+.trow:first-child{border-top:0;padding-top:2px}
+.stseg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.st{border:1px solid var(--line);background:var(--bg);border-radius:10px;min-height:42px;padding:0 6px;cursor:pointer;font-weight:500;color:var(--muted)}
+.st:hover{border-color:var(--accent)}
+.st[aria-pressed="true"][data-v="sudah"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg);font-weight:600}
+.st[aria-pressed="true"][data-v="lewat"]{background:var(--p-zohor);border-color:var(--p-zohor);color:#1B1500;font-weight:600}
+.st[aria-pressed="true"][data-v="tinggal"]{background:var(--danger);border-color:var(--danger);color:var(--on-danger);font-weight:600}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.cal-h{font-size:11px;color:var(--muted);text-align:center;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding-bottom:2px}
+.cd{border:1px solid transparent;background:var(--surface2);border-radius:10px;min-height:52px;min-width:0;padding:5px 2px 6px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:4px;cursor:pointer;font-variant-numeric:tabular-nums;font-size:13px}
+.cd:disabled{opacity:.35;cursor:default}
+.cd.today{border-color:var(--accent)}
+.cd[aria-pressed="true"]{background:color-mix(in srgb,var(--accent) 22%,var(--surface));border-color:var(--accent);font-weight:600}
+.dots{display:flex;gap:2px}
+.dots i{width:5px;height:5px;border-radius:50%;border:1px solid var(--line);display:block}
+.dots i.sudah{background:var(--accent);border-color:var(--accent)}
+.dots i.lewat{background:var(--p-zohor);border-color:var(--p-zohor)}
+.dots i.tinggal{background:var(--danger);border-color:var(--danger)}
+.legend-row{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.legend-row span{display:inline-flex;align-items:center;gap:6px}
+.legend-row i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.calhead{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.calhead strong{font-family:var(--f-display);font-weight:600;font-size:16px;text-align:center;flex:1}
 .overlay{position:fixed;inset:0;z-index:50;background:rgba(8,14,12,.55);display:flex;align-items:flex-end;justify-content:center;
   padding-top:env(safe-area-inset-top,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
 .modal{background:var(--surface);color:var(--fg);width:100%;max-width:520px;max-height:100%;overflow-y:auto;border:1px solid var(--line);
@@ -166,6 +192,29 @@ textarea{width:100%;min-height:110px;border:1px solid var(--line);border-radius:
       <ul class="pace" id="pace"></ul>
     </div>
     <div class="row"><button type="button" class="btn primary" id="openAdd" data-i18n="openAdd"></button></div>
+  </section>
+
+  <section class="panel" id="trackerPanel">
+    <div class="sechead">
+      <h2 data-i18n="trkTitle"></h2>
+      <span class="hint" id="trkStreak"></span>
+    </div>
+    <div class="trk-nav">
+      <button type="button" class="btn small" id="trkPrev">‹</button>
+      <div class="trk-date" id="trkDate" aria-live="polite"></div>
+      <button type="button" class="btn small" id="trkNext">›</button>
+    </div>
+    <div class="row"><button type="button" class="btn small" id="trkToday" data-i18n="trkNow"></button></div>
+    <ul class="plist" id="trkList"></ul>
+    <p class="hint" id="trkSummary"></p>
+    <p class="hint" data-i18n="trkNote"></p>
+    <div class="calhead">
+      <button type="button" class="btn small" id="calPrev">‹</button>
+      <strong id="calTitle"></strong>
+      <button type="button" class="btn small" id="calNext">›</button>
+    </div>
+    <div class="cal" id="calGrid"></div>
+    <div class="legend-row" id="calLegend"></div>
   </section>
 
   <section class="panel" id="dailyPanel" hidden>
@@ -304,6 +353,7 @@ textarea{width:100%;min-height:110px;border:1px solid var(--line);border-radius:
 (function(){
 'use strict';
 const PR=['subuh','zohor','asar','maghrib','isyak'];
+const ST=['sudah','lewat','tinggal'];
 const I18N={
 ms:{
  tagline:'Catat solat yang tertinggal, kemudian jejak qada anda.',
@@ -328,24 +378,30 @@ ms:{
  qDate:'Tarikh', qSave:'Simpan qada', qNone:'Isi sekurang-kurangnya satu bilangan.',
  qDateBad:'Pilih tarikh yang sah, tidak melebihi hari ini.', qOver:'{p}: melebihi baki ({r}).',
  qSaved:'Qada disimpan.', qLeft:'baki {n}',
- today:'Hari ini', goalOf:'{d} daripada {g} solat', todayDone:'{d} solat diqada hari ini',
+ today:'Qada hari ini', goalOf:'{d} daripada {g} solat', todayDone:'{d} solat diqada hari ini',
  goalLabel:'Sasaran harian', goalHint:'Letak 0 untuk matikan sasaran. Streak dikira bagi hari berturut-turut yang mencapai sasaran.',
  goalHit:'Sasaran hari ini tercapai.', streak:'Streak: {n} hari', best:'Terbaik: {n} hari',
  histTitle:'Sejarah', fAll:'Semua', fMissed:'Tertinggal', fQada:'Qada',
  histEmpty:'Belum ada sejarah.', missedTitle:'Tinggal {dur}', qadaTitle:'Qada {p} ×{n}',
  solatCount:'{n} solat', more:'Tunjuk lagi', edit:'Edit', del:'Padam', delAsk:'Padam rekod ini?', delYes:'Ya, padam', cancel:'Batal',
  yr:'tahun', mo:'bulan', dy:'hari',
- backupTitle:'Sandaran',
- backupText:'Muat turun fail sandaran dan simpan ke Google Drive anda. Penyegerakan automatik dengan akaun Google akan ditambah dalam versi app.',
- lastBackup:'Sandaran terakhir: {d}', lastBackupNone:'Belum pernah disandarkan.',
- bnNever:'Anda belum pernah membuat sandaran. Muat turun satu supaya data selamat.',
- bnOld:'Sandaran terakhir {n} hari lalu. Buat yang baru supaya data selamat.',
- bnNow:'Sandarkan sekarang', bnLater:'Kemudian',
- exportBtn:'Muat turun sandaran', importBtn:'Pulihkan daripada fail',
+ trkTitle:'Tracker solat harian', trkNow:'Hari ini',
+ trkPrevAria:'Hari sebelum', trkNextAria:'Hari seterusnya', calPrevAria:'Bulan sebelum', calNextAria:'Bulan seterusnya',
+ st_sudah:'Sudah', st_lewat:'Lewat', st_tinggal:'Tertinggal',
+ trkSummary:'{n} daripada 5 waktu sudah ditanda.',
+ trkNote:'Tertinggal akan menambah 1 pada baki qada waktu itu. Lewat dikira sudah dibuat. Waktu yang tidak ditanda dibiarkan kosong.',
+ trkStreak:'Streak penuh: {n} hari', calAria:'{a} sudah, {b} lewat, {c} tertinggal',
+ backupTitle:'Backup',
+ backupText:'Backup ialah salinan data anda supaya tidak hilang. Download fail backup, kemudian simpan di Google Drive anda. Sync automatik dengan akaun Google akan ditambah dalam versi app.',
+ lastBackup:'Backup terakhir: {d}', lastBackupNone:'Belum pernah backup.',
+ bnNever:'Anda belum pernah backup. Download satu supaya data anda selamat.',
+ bnOld:'Backup terakhir {n} hari lalu. Buat backup baru supaya data anda selamat.',
+ bnNow:'Backup sekarang', bnLater:'Nanti',
+ exportBtn:'Download backup', importBtn:'Restore dari fail',
  importFound:'Fail ini mengandungi {n} rekod.', merge:'Gabung', replace:'Ganti semua',
- imported:'{n} rekod dipulihkan.', badFile:'Fail tidak sah atau tiada rekod yang boleh dipulihkan.',
- exported:'Fail sandaran disediakan.', cancelled:'Dibatalkan.', noData:'Belum ada rekod untuk disandarkan.',
- exportFail:'Muat turun tidak berjaya. Salin data di bawah dan simpan sendiri.',
+ imported:'Restore berjaya: {n} rekod.', badFile:'Fail tidak sah atau tiada rekod untuk direstore.',
+ exported:'Fail backup siap.', cancelled:'Dibatalkan.', noData:'Belum ada rekod untuk dibackup.',
+ exportFail:'Download tidak berjaya. Salin data di bawah dan simpan sendiri.',
  copy:'Salin data', copied:'Data disalin.', copyManual:'Pilih dan salin teks di bawah.',
  sLoading:'Memuatkan data anda…', sSlow:'Sambungan perlahan. Perubahan disimpan apabila bersambung.',
  sDb:'Data disimpan dalam akaun anda dan boleh dibuka dari peranti lain.',
@@ -375,13 +431,19 @@ en:{
  qDate:'Date', qSave:'Save qada', qNone:'Enter at least one number.',
  qDateBad:'Pick a valid date, not after today.', qOver:'{p}: more than remaining ({r}).',
  qSaved:'Qada saved.', qLeft:'{n} left',
- today:'Today', goalOf:'{d} of {g} prayers', todayDone:'{d} prayers made up today',
+ today:'Qada today', goalOf:'{d} of {g} prayers', todayDone:'{d} prayers made up today',
  goalLabel:'Daily goal', goalHint:'Set 0 to turn the goal off. A streak counts consecutive days that reached the goal.',
  goalHit:'Today’s goal reached.', streak:'Streak: {n} day(s)', best:'Best: {n} day(s)',
  histTitle:'History', fAll:'All', fMissed:'Missed', fQada:'Qada',
  histEmpty:'No history yet.', missedTitle:'Missed {dur}', qadaTitle:'Qada {p} ×{n}',
  solatCount:'{n} prayers', more:'Show more', edit:'Edit', del:'Delete', delAsk:'Delete this record?', delYes:'Yes, delete', cancel:'Cancel',
  yr:'yr', mo:'mo', dy:'d',
+ trkTitle:'Daily prayer tracker', trkNow:'Today',
+ trkPrevAria:'Previous day', trkNextAria:'Next day', calPrevAria:'Previous month', calNextAria:'Next month',
+ st_sudah:'Done', st_lewat:'Late', st_tinggal:'Missed',
+ trkSummary:'{n} of 5 prayers marked.',
+ trkNote:'Missed adds 1 to that prayer’s qada balance. Late counts as done. Prayers you do not mark stay blank.',
+ trkStreak:'Full-day streak: {n} day(s)', calAria:'{a} done, {b} late, {c} missed',
  backupTitle:'Backup',
  backupText:'Download a backup file and save it to your Google Drive. Automatic sync with your Google account will come in the app version.',
  lastBackup:'Last backup: {d}', lastBackupNone:'Never backed up.',
@@ -409,7 +471,7 @@ const nf=n=>Number(n).toLocaleString(lang==='ms'?'ms-MY':'en-GB');
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 const defaultSettings=()=>({goal:5,lastBackup:0,snoozeUntil:0});
-const state={entries:new Map(),settings:defaultSettings(),mode:'loading',slow:false,filter:'all',limit:50,pendingDelete:null,importItems:null,importGoal:null,editId:null};
+const state={entries:new Map(),settings:defaultSettings(),mode:'loading',slow:false,filter:'all',limit:50,pendingDelete:null,importItems:null,importGoal:null,editId:null,selDate:null,cal:null};
 let db=null,uid=null,downloads=null,slowTimer=null;
 const chains=new Map();
 
@@ -451,6 +513,15 @@ function clean(r){
     if(!prayers.length||total<=0)return null;
     return {kind:'tinggal',years:y,months:m,days:d,totalDays:total,prayers:prayers,note:String(r.note||'').slice(0,200),at:at};
   }
+  if(r.kind==='harian'){
+    const date=String(r.date);
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||date<'2000-01-01')return null;
+    const src=r.status&&typeof r.status==='object'?r.status:{};
+    const st={};let any=false;
+    PR.forEach(p=>{if(ST.indexOf(src[p])>=0){st[p]=src[p];any=true;}});
+    if(!any)return null;
+    return {kind:'harian',date:date,status:st,at:at};
+  }
   if(r.kind==='qada'){
     if(PR.indexOf(r.prayer)<0)return null;
     let c=Math.floor(Number(r.count));
@@ -467,6 +538,7 @@ function totals(){
   state.entries.forEach(e=>{
     if(e.kind==='tinggal'){e.prayers.forEach(p=>{tot[p]+=e.totalDays;});}
     else if(e.kind==='qada'){done[e.prayer]+=e.count;}
+    else if(e.kind==='harian'){PR.forEach(p=>{if(e.status[p]==='tinggal')tot[p]+=1;});}
   });
   return {tot:tot,done:done};
 }
@@ -475,9 +547,8 @@ function perDay(){
   state.entries.forEach(e=>{if(e.kind==='qada')per[e.date]=(per[e.date]||0)+e.count;});
   return per;
 }
-function streaks(goal,per){
-  if(!goal)return {cur:0,best:0};
-  const dates=Object.keys(per).filter(k=>per[k]>=goal).sort();
+function runStreak(ok){
+  const dates=Object.keys(ok).filter(k=>ok[k]).sort();
   let best=0,run=0,prev=null;
   dates.forEach(k=>{
     if(prev&&dayDiff(prev,k)===1)run++;else run=1;
@@ -485,11 +556,26 @@ function streaks(goal,per){
     prev=k;
   });
   const d=new Date();
-  if(!(per[keyOf(d)]>=goal))d.setDate(d.getDate()-1);
+  if(!ok[keyOf(d)])d.setDate(d.getDate()-1);
   let cur=0;
-  while(per[keyOf(d)]>=goal){cur++;d.setDate(d.getDate()-1);}
+  while(ok[keyOf(d)]){cur++;d.setDate(d.getDate()-1);}
   return {cur:cur,best:best};
 }
+function streaks(goal,per){
+  if(!goal)return {cur:0,best:0};
+  const ok={};
+  Object.keys(per).forEach(k=>{if(per[k]>=goal)ok[k]=true;});
+  return runStreak(ok);
+}
+function fullDays(){
+  const ok={};
+  state.entries.forEach(e=>{
+    if(e.kind==='harian'&&PR.every(p=>e.status[p]==='sudah'||e.status[p]==='lewat'))ok[e.date]=true;
+  });
+  return ok;
+}
+function shiftDate(k,n){const a=k.split('-').map(Number);return keyOf(new Date(a[0],a[1]-1,a[2]+n));}
+function stOf(date){const e=state.entries.get('h-'+date);return e&&e.kind==='harian'?e.status:{};}
 
 /* ---------- storage ---------- */
 function setStatusErr(){$('#statusLine').textContent=t('saveErr');}
@@ -575,7 +661,58 @@ function undoQada(p){
   else put(best.id,{kind:'qada',prayer:p,date:best.e.date,count:best.e.count-1,at:Date.now()});
 }
 
+function setStatus(date,p,v){
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||date>today()||date<'2000-01-01')return;
+  if(PR.indexOf(p)<0||ST.indexOf(v)<0)return;
+  const id='h-'+date,ex=state.entries.get(id);
+  const st=Object.assign({},ex&&ex.kind==='harian'?ex.status:{});
+  if(st[p]===v)delete st[p];else st[p]=v;
+  if(!Object.keys(st).length){if(ex)remove(id);return;}
+  put(id,{kind:'harian',date:date,status:st,at:Date.now()});
+}
+
 /* ---------- render ---------- */
+function renderTracker(){
+  const sel=state.selDate,td=today(),stt=stOf(sel);
+  $('#trkDate').textContent=(sel===td?t('trkNow')+' · ':'')+fmtDate(sel);
+  $('#trkNext').disabled=sel>=td;
+  $('#trkPrev').disabled=sel<='2000-01-01';
+  $('#trkToday').hidden=sel===td;
+  $('#trkList').innerHTML=PR.map(p=>{
+    const name=t('p_'+p);
+    return '<li class="trow" style="--c:var(--p-'+p+')"><span class="pname"><i class="dot"></i>'+esc(name)+'</span>'+
+      '<div class="stseg" role="group" aria-label="'+esc(name)+'">'+
+      ST.map(v=>'<button type="button" class="st" data-tp="'+p+'" data-v="'+v+'" aria-pressed="'+(stt[p]===v)+'">'+esc(t('st_'+v))+'</button>').join('')+
+      '</div></li>';
+  }).join('');
+  $('#trkSummary').textContent=t('trkSummary',{n:Object.keys(stt).length});
+  const s=runStreak(fullDays());
+  $('#trkStreak').textContent=t('trkStreak',{n:s.cur})+' · '+t('best',{n:s.best});
+  renderCalendar();
+}
+function renderCalendar(){
+  const y=state.cal.y,m=state.cal.m,td=today(),loc=lang==='ms'?'ms-MY':'en-GB';
+  const first=new Date(y,m,1),days=new Date(y,m+1,0).getDate(),lead=first.getDay();
+  $('#calTitle').textContent=first.toLocaleDateString(loc,{month:'long',year:'numeric'});
+  let h='';
+  for(let i=0;i<7;i++){h+='<div class="cal-h" aria-hidden="true">'+esc(new Date(2023,0,1+i).toLocaleDateString(loc,{weekday:'short'}))+'</div>';}
+  for(let i=0;i<lead;i++)h+='<div></div>';
+  for(let d=1;d<=days;d++){
+    const key=y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    const st=stOf(key),c={sudah:0,lewat:0,tinggal:0};
+    PR.forEach(p=>{if(st[p])c[st[p]]++;});
+    const label=fmtDate(key)+': '+t('calAria',{a:c.sudah,b:c.lewat,c:c.tinggal});
+    h+='<button type="button" class="cd'+(key===td?' today':'')+'" data-date="'+key+'" aria-pressed="'+(key===state.selDate)+'" aria-label="'+esc(label)+'"'+(key>td?' disabled':'')+'>'+
+      '<span>'+d+'</span><span class="dots" aria-hidden="true">'+PR.map(p=>'<i class="'+(st[p]||'')+'"></i>').join('')+'</span></button>';
+  }
+  $('#calGrid').innerHTML=h;
+  const n=new Date();
+  $('#calNext').disabled=(y*12+m)>=(n.getFullYear()*12+n.getMonth());
+}
+function renderLegend(){
+  const col={sudah:'var(--accent)',lewat:'var(--p-zohor)',tinggal:'var(--danger)'};
+  $('#calLegend').innerHTML=ST.map(v=>'<span><i style="background:'+col[v]+'"></i>'+esc(t('st_'+v))+'</span>').join('');
+}
 function renderHero(){
   const T=totals();
   let total=0,rem=0,done=0;
@@ -631,7 +768,7 @@ function renderPrayers(){
   $('#openQada').disabled=!anyLeft;
 }
 function renderHistory(){
-  let list=Array.from(state.entries).map(a=>({id:a[0],e:a[1]}));
+  let list=Array.from(state.entries).map(a=>({id:a[0],e:a[1]})).filter(x=>x.e.kind!=='harian');
   if(state.filter!=='all')list=list.filter(x=>x.e.kind===state.filter);
   list.sort((a,b)=>b.e.at-a.e.at);
   const shown=list.slice(0,state.limit);
@@ -684,7 +821,7 @@ function updateAddLabels(){
   $('#addTitle').textContent=t(state.editId?'editTitle':'addTitle');
   $('#addSubmit').textContent=t(state.editId?'save':'add');
 }
-function renderAll(){renderHero();renderDaily();renderPrayers();renderHistory();renderBanner();renderBackupLine();renderStatus();}
+function renderAll(){renderHero();renderTracker();renderDaily();renderPrayers();renderHistory();renderBanner();renderBackupLine();renderStatus();}
 function applyLang(){
   document.documentElement.lang=lang;
   qsa('[data-i18n]').forEach(el=>{el.textContent=t(el.dataset.i18n);});
@@ -693,6 +830,11 @@ function applyLang(){
   qsa('[data-lang]').forEach(b=>{b.setAttribute('aria-pressed',String(b.dataset.lang===lang));});
   $('#closeAdd').setAttribute('aria-label',t('close'));
   $('#closeQada').setAttribute('aria-label',t('close'));
+  $('#trkPrev').setAttribute('aria-label',t('trkPrevAria'));
+  $('#trkNext').setAttribute('aria-label',t('trkNextAria'));
+  $('#calPrev').setAttribute('aria-label',t('calPrevAria'));
+  $('#calNext').setAttribute('aria-label',t('calNextAria'));
+  renderLegend();
   updateAddLabels();
   renderPreview();
 }
@@ -802,6 +944,35 @@ $('#plist').addEventListener('click',e=>{
   if(b.dataset.act==='inc')addQada(b.dataset.p,Number(b.dataset.n));else undoQada(b.dataset.p);
 });
 $('#allOne').addEventListener('click',()=>{PR.forEach(p=>addQada(p,1));});
+function selectDate(k){
+  state.selDate=k;
+  const a=k.split('-').map(Number);state.cal={y:a[0],m:a[1]-1};
+  renderTracker();
+}
+$('#trkList').addEventListener('click',e=>{
+  const b=e.target.closest('button[data-tp]');if(!b)return;
+  const p=b.dataset.tp,v=b.dataset.v;
+  setStatus(state.selDate,p,v);
+  const nb=document.querySelector('#trkList button[data-tp="'+p+'"][data-v="'+v+'"]');
+  if(nb)nb.focus();
+});
+$('#trkPrev').addEventListener('click',()=>{if(state.selDate>'2000-01-01')selectDate(shiftDate(state.selDate,-1));});
+$('#trkNext').addEventListener('click',()=>{if(state.selDate<today())selectDate(shiftDate(state.selDate,1));});
+$('#trkToday').addEventListener('click',()=>selectDate(today()));
+$('#calGrid').addEventListener('click',e=>{
+  const b=e.target.closest('button[data-date]');if(!b||b.disabled)return;
+  const k=b.dataset.date;
+  state.selDate=k;renderTracker();
+  const nb=document.querySelector('#calGrid button[data-date="'+k+'"]');
+  if(nb)nb.focus();
+});
+function moveMonth(n){
+  const d=new Date(state.cal.y,state.cal.m+n,1);
+  state.cal={y:d.getFullYear(),m:d.getMonth()};
+  renderCalendar();
+}
+$('#calPrev').addEventListener('click',()=>moveMonth(-1));
+$('#calNext').addEventListener('click',()=>{if(!$('#calNext').disabled)moveMonth(1);});
 $('#goalMinus').addEventListener('click',()=>putSettings({goal:Math.max(0,state.settings.goal-1)}));
 $('#goalPlus').addEventListener('click',()=>putSettings({goal:Math.min(500,state.settings.goal+1)}));
 $('#goalInput').addEventListener('change',e=>{
@@ -904,6 +1075,8 @@ $('#impReplace').addEventListener('click',()=>runImport(true));
 $('#impCancel').addEventListener('click',()=>{state.importItems=null;$('#importBox').hidden=true;backupMsg('cancelled');});
 
 /* ---------- boot ---------- */
+state.selDate=today();
+{const n=new Date();state.cal={y:n.getFullYear(),m:n.getMonth()};}
 applyLang();
 renderAll();
 (async function(){
