@@ -610,7 +610,18 @@ function exportJson(){
 function showFallback(){$('#fallbackBox').hidden=false;$('#fallbackTa').value=exportJson();}
 $('#exportBtn').addEventListener('click',async()=>{
   if(!state.entries.size){backupMsg('noData',null,true);return;}
-  if(!downloads){showFallback();backupMsg('exportFail',null,true);return;}
+  if(!downloads){
+    try{
+      const blob=new Blob([exportJson()],{type:'application/json'});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');
+      a.href=url;a.download='qada-solat-'+today()+'.json';
+      document.body.appendChild(a);a.click();a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),10000);
+      backupMsg('exported');
+    }catch(e){showFallback();backupMsg('exportFail',null,true);}
+    return;
+  }
   try{
     await downloads.save({filename:'qada-solat-'+today()+'.json',data:exportJson()});
     backupMsg('exported');
