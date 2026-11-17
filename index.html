@@ -9,7 +9,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Instrument+Sans:wght@400;500;600&display=swap">
 <style>
-/* Layout: one column. Hero total, then five prayer rows (hues follow the day from dawn to night), add form, history, backup. */
+/* Layout: one column. Backup banner, hero total, today's goal, five prayer rows (hues follow the day from dawn to night), history, backup. Popups for adding, editing and logging by date. */
 :root{
   --bg:#F2F5F3; --surface:#FFFFFF; --surface2:#E7EDEA; --fg:#14211D; --muted:#566862; --line:#D3DDD8;
   --accent:#1B6B58; --accent-fg:#FFFFFF; --danger:#B3362E;
@@ -44,6 +44,7 @@ h1{font-size:26px;line-height:1.15}
 h2{font-size:19px;line-height:1.25}
 p{margin:0}
 button,input,textarea{font:inherit;color:inherit}
+button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
 .top p{color:var(--muted);margin-top:4px;max-width:44ch}
@@ -51,8 +52,10 @@ button,input,textarea{font:inherit;color:inherit}
 .seg button{border:0;background:transparent;padding:7px 12px;min-height:36px;cursor:pointer;color:var(--muted);font-weight:500}
 .seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-fg)}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.banner{background:color-mix(in srgb,var(--p-zohor) 16%,var(--surface));border:1px solid var(--p-zohor);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
 .eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
 .big{font-family:var(--f-display);font-weight:600;font-size:clamp(46px,13vw,76px);line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.goalnum{font-family:var(--f-display);font-weight:600;font-size:30px;line-height:1.1;font-variant-numeric:tabular-nums}
 .sub{color:var(--muted)}
 .bar{height:8px;border-radius:99px;background:var(--surface2);overflow:hidden}
 .bar>span{display:block;height:100%;width:0;background:var(--c,var(--accent));border-radius:99px;transition:width .3s ease}
@@ -81,7 +84,7 @@ button,input,textarea{font:inherit;color:inherit}
 .fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 .field{display:flex;flex-direction:column;gap:5px;min-width:0}
 .field label,.legend{font-size:13px;color:var(--muted);font-weight:500}
-input[type=number],input[type=text]{width:100%;min-height:44px;font-size:16px;border:1px solid var(--line);border-radius:10px;background:var(--bg);padding:0 12px}
+input[type=number],input[type=text],input[type=date]{width:100%;min-height:44px;font-size:16px;border:1px solid var(--line);border-radius:10px;background:var(--bg);padding:0 12px}
 input[type=number]{font-variant-numeric:tabular-nums}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{position:relative}
@@ -90,6 +93,9 @@ input[type=number]{font-variant-numeric:tabular-nums}
 .chip span::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--c)}
 .chip input:checked+span{border-color:var(--c);background:color-mix(in srgb,var(--c) 16%,var(--surface));color:var(--fg)}
 .chip input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
+.qgrid{display:flex;flex-direction:column;gap:10px}
+.qrow{display:grid;grid-template-columns:minmax(0,1fr) 110px;gap:10px;align-items:center}
+.qrow small{display:block;color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}
 .preview{background:var(--surface2);border-radius:10px;padding:10px 12px;font-variant-numeric:tabular-nums}
 .hint{color:var(--muted);font-size:13px}
 .msg{min-height:20px;font-size:13px;color:var(--accent);font-weight:500}
@@ -104,6 +110,7 @@ input[type=number]{font-variant-numeric:tabular-nums}
 .kind.q{background:color-mix(in srgb,var(--accent) 18%,var(--surface));color:var(--accent)}
 .hact{display:flex;gap:6px;flex:none;align-items:center;flex-wrap:wrap;justify-content:flex-end}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.goalrow{gap:8px}
 .importbox{background:var(--surface2);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:10px}
 textarea{width:100%;min-height:110px;border:1px solid var(--line);border-radius:10px;background:var(--bg);padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px}
 .status{color:var(--muted);font-size:13px;text-align:center}
@@ -114,7 +121,6 @@ textarea{width:100%;min-height:110px;border:1px solid var(--line);border-radius:
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:max(20px,env(safe-area-inset-bottom,0px));z-index:60;
   background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:500;max-width:calc(100% - 32px)}
 @media (min-width:600px){.overlay{align-items:center;padding:20px}.modal{border-radius:16px;max-height:calc(100% - 8px)}}
-button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 @media (pointer:coarse){.btn{min-height:44px}.btn.small{min-height:42px}.seg button{min-height:42px}.chip span{min-height:44px}}
 @media (max-width:520px){
   #openAdd{width:100%}
@@ -141,6 +147,14 @@ button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
     </div>
   </header>
 
+  <div class="banner" id="backupBanner" role="status" hidden>
+    <p id="bannerText"></p>
+    <div class="row">
+      <button type="button" class="btn primary small" id="bannerNow" data-i18n="bnNow"></button>
+      <button type="button" class="btn small" id="bannerLater" data-i18n="bnLater"></button>
+    </div>
+  </div>
+
   <section class="panel" aria-live="polite">
     <p class="eyebrow" data-i18n="remaining"></p>
     <p class="big" id="bigNum">0</p>
@@ -154,10 +168,30 @@ button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
     <div class="row"><button type="button" class="btn primary" id="openAdd" data-i18n="openAdd"></button></div>
   </section>
 
+  <section class="panel" id="dailyPanel" hidden>
+    <div class="sechead">
+      <h2 data-i18n="today"></h2>
+      <span class="hint" id="streakLine"></span>
+    </div>
+    <p class="goalnum" id="goalNum"></p>
+    <div class="bar" id="goalBar"><span id="goalFill"></span></div>
+    <p class="msg" id="goalMsg"></p>
+    <div class="row goalrow">
+      <label for="goalInput" class="legend" data-i18n="goalLabel"></label>
+      <button type="button" class="btn small" id="goalMinus" aria-label="−1">−</button>
+      <input type="number" id="goalInput" min="0" max="500" inputmode="numeric" style="width:84px;text-align:center">
+      <button type="button" class="btn small" id="goalPlus" aria-label="+1">+</button>
+    </div>
+    <p class="hint" data-i18n="goalHint"></p>
+  </section>
+
   <section class="panel">
     <div class="sechead">
       <h2 data-i18n="perPrayer"></h2>
-      <button type="button" class="btn small" id="allOne" data-i18n="allOne"></button>
+      <div class="row">
+        <button type="button" class="btn small" id="openQada" data-i18n="logByDate"></button>
+        <button type="button" class="btn small" id="allOne" data-i18n="allOne"></button>
+      </div>
     </div>
     <ul class="plist" id="plist"></ul>
   </section>
@@ -165,7 +199,7 @@ button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
   <div class="overlay" id="addModal" hidden>
   <section class="modal" role="dialog" aria-modal="true" aria-labelledby="addTitle">
     <div class="sechead">
-      <h2 id="addTitle" data-i18n="addTitle"></h2>
+      <h2 id="addTitle"></h2>
       <button type="button" class="btn small" id="closeAdd">✕</button>
     </div>
     <p class="hint" data-i18n="addHint"></p>
@@ -191,8 +225,35 @@ button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
       </div>
       <p class="preview" id="preview"></p>
       <div class="row">
-        <button type="submit" class="btn primary" data-i18n="add"></button>
+        <button type="submit" class="btn primary" id="addSubmit"></button>
         <span class="msg" id="addMsg" role="status"></span>
+      </div>
+    </form>
+  </section>
+  </div>
+
+  <div class="overlay" id="qadaModal" hidden>
+  <section class="modal" role="dialog" aria-modal="true" aria-labelledby="qTitle">
+    <div class="sechead">
+      <h2 id="qTitle" data-i18n="qTitle"></h2>
+      <button type="button" class="btn small" id="closeQada">✕</button>
+    </div>
+    <p class="hint" data-i18n="qHint"></p>
+    <form id="qadaForm" class="panel" style="border:0;padding:0;background:transparent" novalidate>
+      <div class="field">
+        <label for="qDate" data-i18n="qDate"></label>
+        <input type="date" id="qDate">
+      </div>
+      <div class="qgrid">
+        <div class="qrow" style="--c:var(--p-subuh)"><span><span class="pname"><i class="dot"></i><span data-pn="subuh"></span></span><small id="qr_subuh"></small></span><input type="number" id="q_subuh" min="0" inputmode="numeric" placeholder="0"></div>
+        <div class="qrow" style="--c:var(--p-zohor)"><span><span class="pname"><i class="dot"></i><span data-pn="zohor"></span></span><small id="qr_zohor"></small></span><input type="number" id="q_zohor" min="0" inputmode="numeric" placeholder="0"></div>
+        <div class="qrow" style="--c:var(--p-asar)"><span><span class="pname"><i class="dot"></i><span data-pn="asar"></span></span><small id="qr_asar"></small></span><input type="number" id="q_asar" min="0" inputmode="numeric" placeholder="0"></div>
+        <div class="qrow" style="--c:var(--p-maghrib)"><span><span class="pname"><i class="dot"></i><span data-pn="maghrib"></span></span><small id="qr_maghrib"></small></span><input type="number" id="q_maghrib" min="0" inputmode="numeric" placeholder="0"></div>
+        <div class="qrow" style="--c:var(--p-isyak)"><span><span class="pname"><i class="dot"></i><span data-pn="isyak"></span></span><small id="qr_isyak"></small></span><input type="number" id="q_isyak" min="0" inputmode="numeric" placeholder="0"></div>
+      </div>
+      <div class="row">
+        <button type="submit" class="btn primary" data-i18n="qSave"></button>
+        <span class="msg" id="qMsg" role="status"></span>
       </div>
     </form>
   </section>
@@ -215,6 +276,7 @@ button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
   <section class="panel">
     <h2 data-i18n="backupTitle"></h2>
     <p class="hint" data-i18n="backupText"></p>
+    <p class="hint" id="lastBackupLine"></p>
     <div class="row">
       <button type="button" class="btn primary" id="exportBtn" data-i18n="exportBtn"></button>
       <button type="button" class="btn" id="importBtn" data-i18n="importBtn"></button>
@@ -246,27 +308,39 @@ const I18N={
 ms:{
  tagline:'Catat solat yang tertinggal, kemudian jejak qada anda.',
  remaining:'Baki qada', heroSub:'daripada {n} solat tertinggal',
- heroNone:'Belum ada rekod. Tambah tempoh tinggal solat di bawah untuk mula.',
+ heroNone:'Belum ada rekod. Tambah tempoh tinggal solat untuk mula.',
  heroDone:'Semua qada telah selesai. Alhamdulillah.',
  progress:'{p}% selesai · {d} solat sudah diqada',
  paceTitle:'Anggaran masa siap', paceItem:'{n} solat sehari',
- perPrayer:'Setiap waktu', allOne:'+1 semua waktu',
+ perPrayer:'Setiap waktu', allOne:'+1 semua waktu', logByDate:'Catat ikut tarikh',
  p_subuh:'Subuh',p_zohor:'Zohor',p_asar:'Asar',p_maghrib:'Maghrib',p_isyak:'Isyak',
  remLabel:'baki', doneMeta:'Diqada {d} daripada {t}',
  incAria:'Qada {p} tambah {n}', decAria:'Kurangkan satu qada {p}',
- addTitle:'Tambah tempoh tinggal solat', openAdd:'Tambah tempoh tinggal', close:'Tutup',
+ openAdd:'Tambah tempoh tinggal', close:'Tutup',
+ addTitle:'Tambah tempoh tinggal solat', editTitle:'Edit tempoh tinggal solat',
  addHint:'Isi berapa lama solat tertinggal, lalu pilih waktunya. Anggaran: 1 tahun = 365 hari, 1 bulan = 30 hari.',
  years:'Tahun',months:'Bulan',days:'Hari', which:'Waktu yang tertinggal',
  note:'Catatan (pilihan)', notePh:'cth. zaman sekolah menengah',
  preview:'{d} hari × {p} waktu = {n} solat',
  previewEmpty:'Isi sekurang-kurangnya satu tempoh dan pilih satu waktu.',
- add:'Tambah rekod', added:'Rekod ditambah.',
+ add:'Tambah rekod', save:'Simpan perubahan', added:'Rekod ditambah.', updated:'Perubahan disimpan.',
+ qTitle:'Catat qada ikut tarikh', qHint:'Pilih tarikh qada itu dilakukan, kemudian isi bilangan bagi setiap waktu.',
+ qDate:'Tarikh', qSave:'Simpan qada', qNone:'Isi sekurang-kurangnya satu bilangan.',
+ qDateBad:'Pilih tarikh yang sah, tidak melebihi hari ini.', qOver:'{p}: melebihi baki ({r}).',
+ qSaved:'Qada disimpan.', qLeft:'baki {n}',
+ today:'Hari ini', goalOf:'{d} daripada {g} solat', todayDone:'{d} solat diqada hari ini',
+ goalLabel:'Sasaran harian', goalHint:'Letak 0 untuk matikan sasaran. Streak dikira bagi hari berturut-turut yang mencapai sasaran.',
+ goalHit:'Sasaran hari ini tercapai.', streak:'Streak: {n} hari', best:'Terbaik: {n} hari',
  histTitle:'Sejarah', fAll:'Semua', fMissed:'Tertinggal', fQada:'Qada',
  histEmpty:'Belum ada sejarah.', missedTitle:'Tinggal {dur}', qadaTitle:'Qada {p} ×{n}',
- solatCount:'{n} solat', more:'Tunjuk lagi', del:'Padam', delAsk:'Padam rekod ini?', delYes:'Ya, padam', cancel:'Batal',
+ solatCount:'{n} solat', more:'Tunjuk lagi', edit:'Edit', del:'Padam', delAsk:'Padam rekod ini?', delYes:'Ya, padam', cancel:'Batal',
  yr:'tahun', mo:'bulan', dy:'hari',
  backupTitle:'Sandaran',
  backupText:'Muat turun fail sandaran dan simpan ke Google Drive anda. Penyegerakan automatik dengan akaun Google akan ditambah dalam versi app.',
+ lastBackup:'Sandaran terakhir: {d}', lastBackupNone:'Belum pernah disandarkan.',
+ bnNever:'Anda belum pernah membuat sandaran. Muat turun satu supaya data selamat.',
+ bnOld:'Sandaran terakhir {n} hari lalu. Buat yang baru supaya data selamat.',
+ bnNow:'Sandarkan sekarang', bnLater:'Kemudian',
  exportBtn:'Muat turun sandaran', importBtn:'Pulihkan daripada fail',
  importFound:'Fail ini mengandungi {n} rekod.', merge:'Gabung', replace:'Ganti semua',
  imported:'{n} rekod dipulihkan.', badFile:'Fail tidak sah atau tiada rekod yang boleh dipulihkan.',
@@ -281,27 +355,39 @@ ms:{
 en:{
  tagline:'Log the prayers you missed, then track your qada.',
  remaining:'Qada remaining', heroSub:'of {n} missed prayers',
- heroNone:'No records yet. Add a missed period below to begin.',
+ heroNone:'No records yet. Add a missed period to begin.',
  heroDone:'All qada prayers are complete. Alhamdulillah.',
  progress:'{p}% done · {d} prayers made up',
  paceTitle:'Estimated time to finish', paceItem:'{n} prayers a day',
- perPrayer:'Each prayer', allOne:'+1 every prayer',
+ perPrayer:'Each prayer', allOne:'+1 every prayer', logByDate:'Log by date',
  p_subuh:'Fajr',p_zohor:'Dhuhr',p_asar:'Asr',p_maghrib:'Maghrib',p_isyak:'Isha',
  remLabel:'left', doneMeta:'Made up {d} of {t}',
  incAria:'Add {n} qada for {p}', decAria:'Remove one qada for {p}',
- addTitle:'Add a missed period', openAdd:'Add a missed period', close:'Close',
+ openAdd:'Add a missed period', close:'Close',
+ addTitle:'Add a missed period', editTitle:'Edit missed period',
  addHint:'Enter how long you missed prayers, then pick which ones. Estimate: 1 year = 365 days, 1 month = 30 days.',
  years:'Years',months:'Months',days:'Days', which:'Prayers missed',
  note:'Note (optional)', notePh:'e.g. secondary school years',
  preview:'{d} days × {p} prayers = {n} prayers',
  previewEmpty:'Enter at least one period and pick at least one prayer.',
- add:'Add record', added:'Record added.',
+ add:'Add record', save:'Save changes', added:'Record added.', updated:'Changes saved.',
+ qTitle:'Log qada by date', qHint:'Pick the date the qada was done, then enter how many of each prayer.',
+ qDate:'Date', qSave:'Save qada', qNone:'Enter at least one number.',
+ qDateBad:'Pick a valid date, not after today.', qOver:'{p}: more than remaining ({r}).',
+ qSaved:'Qada saved.', qLeft:'{n} left',
+ today:'Today', goalOf:'{d} of {g} prayers', todayDone:'{d} prayers made up today',
+ goalLabel:'Daily goal', goalHint:'Set 0 to turn the goal off. A streak counts consecutive days that reached the goal.',
+ goalHit:'Today’s goal reached.', streak:'Streak: {n} day(s)', best:'Best: {n} day(s)',
  histTitle:'History', fAll:'All', fMissed:'Missed', fQada:'Qada',
  histEmpty:'No history yet.', missedTitle:'Missed {dur}', qadaTitle:'Qada {p} ×{n}',
- solatCount:'{n} prayers', more:'Show more', del:'Delete', delAsk:'Delete this record?', delYes:'Yes, delete', cancel:'Cancel',
+ solatCount:'{n} prayers', more:'Show more', edit:'Edit', del:'Delete', delAsk:'Delete this record?', delYes:'Yes, delete', cancel:'Cancel',
  yr:'yr', mo:'mo', dy:'d',
  backupTitle:'Backup',
  backupText:'Download a backup file and save it to your Google Drive. Automatic sync with your Google account will come in the app version.',
+ lastBackup:'Last backup: {d}', lastBackupNone:'Never backed up.',
+ bnNever:'You have never made a backup. Download one to keep your data safe.',
+ bnOld:'Last backup was {n} days ago. Make a fresh one to keep your data safe.',
+ bnNow:'Back up now', bnLater:'Later',
  exportBtn:'Download backup', importBtn:'Restore from file',
  importFound:'This file has {n} records.', merge:'Merge', replace:'Replace all',
  imported:'{n} records restored.', badFile:'The file is invalid or has no records to restore.',
@@ -322,13 +408,19 @@ const qsa=s=>Array.from(document.querySelectorAll(s));
 const nf=n=>Number(n).toLocaleString(lang==='ms'?'ms-MY':'en-GB');
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-const state={entries:new Map(),mode:'loading',slow:false,filter:'all',limit:50,pendingDelete:null,importItems:null};
+const defaultSettings=()=>({goal:5,lastBackup:0,snoozeUntil:0});
+const state={entries:new Map(),settings:defaultSettings(),mode:'loading',slow:false,filter:'all',limit:50,pendingDelete:null,importItems:null,importGoal:null,editId:null};
 let db=null,uid=null,downloads=null,slowTimer=null;
 const chains=new Map();
 
 /* ---------- helpers ---------- */
-function today(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function keyOf(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function today(){return keyOf(new Date());}
 function fmtDate(s){const a=String(s).split('-').map(Number);return new Date(a[0],a[1]-1,a[2]).toLocaleDateString(lang==='ms'?'ms-MY':'en-GB',{day:'numeric',month:'short',year:'numeric'});}
+function dayDiff(a,b){
+  const x=String(a).split('-').map(Number),y=String(b).split('-').map(Number);
+  return Math.round((Date.UTC(y[0],y[1]-1,y[2])-Date.UTC(x[0],x[1]-1,x[2]))/864e5);
+}
 function dur(d){
   const y=Math.floor(d/365),r=d%365,m=Math.floor(r/30),dd=r%30,parts=[];
   if(y)parts.push(nf(y)+' '+t('yr'));
@@ -338,6 +430,15 @@ function dur(d){
 }
 function newId(){return 't-'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
 const ID_OK=/^[A-Za-z0-9_-]{1,64}$/;
+const idUsable=id=>ID_OK.test(id)&&id!=='settings';
+function cleanSettings(r){
+  const d=defaultSettings();
+  if(!r||typeof r!=='object')return d;
+  const g=Math.floor(Number(r.goal));if(isFinite(g)&&g>=0)d.goal=Math.min(g,500);
+  const lb=Number(r.lastBackup);if(isFinite(lb)&&lb>0)d.lastBackup=lb;
+  const sn=Number(r.snoozeUntil);if(isFinite(sn)&&sn>0)d.snoozeUntil=sn;
+  return d;
+}
 function clean(r){
   if(!r||typeof r!=='object')return null;
   const at=Number(r.at)||0;
@@ -369,9 +470,29 @@ function totals(){
   });
   return {tot:tot,done:done};
 }
+function perDay(){
+  const per={};
+  state.entries.forEach(e=>{if(e.kind==='qada')per[e.date]=(per[e.date]||0)+e.count;});
+  return per;
+}
+function streaks(goal,per){
+  if(!goal)return {cur:0,best:0};
+  const dates=Object.keys(per).filter(k=>per[k]>=goal).sort();
+  let best=0,run=0,prev=null;
+  dates.forEach(k=>{
+    if(prev&&dayDiff(prev,k)===1)run++;else run=1;
+    if(run>best)best=run;
+    prev=k;
+  });
+  const d=new Date();
+  if(!(per[keyOf(d)]>=goal))d.setDate(d.getDate()-1);
+  let cur=0;
+  while(per[keyOf(d)]>=goal){cur++;d.setDate(d.getDate()-1);}
+  return {cur:cur,best:best};
+}
 
 /* ---------- storage ---------- */
-function setStatusErr(){const el=$('#statusLine');el.textContent=t('saveErr');}
+function setStatusErr(){$('#statusLine').textContent=t('saveErr');}
 function enqueue(id,fn){
   const prev=chains.get(id)||Promise.resolve();
   const next=prev.then(fn).catch(setStatusErr);
@@ -381,13 +502,15 @@ function enqueue(id,fn){
 }
 function colRef(){return db.collection('data/users/'+uid);}
 function saveLocal(){try{localStorage.setItem('qada.entries',JSON.stringify(Array.from(state.entries)));}catch(e){}}
+function saveSettingsLocal(){try{localStorage.setItem('qada.settings',JSON.stringify(state.settings));}catch(e){}}
 function loadLocal(){
   try{
     const raw=JSON.parse(localStorage.getItem('qada.entries')||'[]');
     const m=new Map();
-    raw.forEach(pair=>{const rec=clean(pair[1]);if(rec&&ID_OK.test(String(pair[0])))m.set(String(pair[0]),rec);});
+    raw.forEach(pair=>{const rec=clean(pair[1]);if(rec&&idUsable(String(pair[0])))m.set(String(pair[0]),rec);});
     state.entries=m;
   }catch(e){}
+  try{state.settings=cleanSettings(JSON.parse(localStorage.getItem('qada.settings')||'null'));}catch(e){}
 }
 function put(id,rec){
   state.entries.set(id,rec);
@@ -398,6 +521,12 @@ function remove(id){
   state.entries.delete(id);
   renderAll();
   if(db){enqueue(id,()=>colRef().doc(id).delete());}else{saveLocal();}
+}
+function putSettings(patch){
+  state.settings=Object.assign({},state.settings,patch);
+  renderAll();
+  const snap=Object.assign({},state.settings);
+  if(db){enqueue('settings',()=>colRef().doc('settings').set(snap));}else{saveSettingsLocal();}
 }
 async function bulkApply(items,replace){
   const next=replace?new Map():new Map(state.entries);
@@ -416,9 +545,13 @@ function startDb(){
   slowTimer=setTimeout(()=>{if(state.mode==='loading'){state.slow=true;renderStatus();}},10000);
   colRef().onSnapshot(snap=>{
     clearTimeout(slowTimer);
-    const m=new Map();
-    snap.docs.forEach(d=>{const rec=clean(d.data());if(rec&&ID_OK.test(d.id))m.set(d.id,rec);});
-    state.entries=m;state.mode='db';state.slow=false;
+    const m=new Map();let st=null;
+    snap.docs.forEach(d=>{
+      if(d.id==='settings'){st=cleanSettings(d.data());return;}
+      const rec=clean(d.data());
+      if(rec&&idUsable(d.id))m.set(d.id,rec);
+    });
+    state.entries=m;state.settings=st||defaultSettings();state.mode='db';state.slow=false;
     renderAll();
   },()=>{clearTimeout(slowTimer);db=null;goLocal();});
 }
@@ -461,6 +594,21 @@ function renderHero(){
   pace.hidden=false;
   $('#pace').innerHTML=[5,10,20].map(n=>'<li><small>'+esc(t('paceItem',{n:n}))+'</small><b>'+esc(dur(Math.ceil(rem/n)))+'</b></li>').join('');
 }
+function renderDaily(){
+  const T=totals();
+  let total=0;PR.forEach(p=>{total+=T.tot[p];});
+  const panel=$('#dailyPanel');
+  if(total===0){panel.hidden=true;return;}
+  panel.hidden=false;
+  const goal=state.settings.goal,per=perDay(),dn=per[today()]||0;
+  $('#goalNum').textContent=goal?t('goalOf',{d:nf(dn),g:nf(goal)}):t('todayDone',{d:nf(dn)});
+  $('#goalBar').hidden=!goal;
+  $('#goalFill').style.width=(goal?Math.min(100,dn/goal*100):0)+'%';
+  $('#goalMsg').textContent=(goal&&dn>=goal)?t('goalHit'):'';
+  if(goal){const s=streaks(goal,per);$('#streakLine').textContent=t('streak',{n:s.cur})+' · '+t('best',{n:s.best});}
+  else $('#streakLine').textContent='';
+  if(document.activeElement!==$('#goalInput'))$('#goalInput').value=goal;
+}
 function renderPrayers(){
   const T=totals();
   let anyLeft=false;
@@ -480,6 +628,7 @@ function renderPrayers(){
       '</span></div></li>';
   }).join('');
   $('#allOne').disabled=!anyLeft;
+  $('#openQada').disabled=!anyLeft;
 }
 function renderHistory(){
   let list=Array.from(state.entries).map(a=>({id:a[0],e:a[1]}));
@@ -499,11 +648,25 @@ function renderHistory(){
       sub=esc(fmtDate(e.date));
     }
     const asking=state.pendingDelete===x.id;
+    const editBtn=e.kind==='tinggal'?'<button type="button" class="btn link" data-hact="edit" data-id="'+esc(x.id)+'">'+esc(t('edit'))+'</button>':'';
     const act=asking
       ?'<span class="hsub">'+esc(t('delAsk'))+'</span><button type="button" class="btn small danger" data-hact="yes" data-id="'+esc(x.id)+'">'+esc(t('delYes'))+'</button><button type="button" class="btn small" data-hact="no">'+esc(t('cancel'))+'</button>'
-      :'<button type="button" class="btn link" data-hact="ask" data-id="'+esc(x.id)+'">'+esc(t('del'))+'</button>';
+      :editBtn+'<button type="button" class="btn link" data-hact="ask" data-id="'+esc(x.id)+'">'+esc(t('del'))+'</button>';
     return '<li class="hitem"><div class="hbody"><div class="htitle">'+title+'</div><div class="hsub">'+sub+'</div></div><div class="hact">'+act+'</div></li>';
   }).join('');
+}
+function renderBanner(){
+  const b=$('#backupBanner'),s=state.settings,now=Date.now();
+  if(!state.entries.size||state.mode==='loading'){b.hidden=true;return;}
+  const days=s.lastBackup?Math.floor((now-s.lastBackup)/864e5):null;
+  const due=!s.lastBackup||days>=7;
+  if(!due||s.snoozeUntil>now){b.hidden=true;return;}
+  $('#bannerText').textContent=s.lastBackup?t('bnOld',{n:days}):t('bnNever');
+  b.hidden=false;
+}
+function renderBackupLine(){
+  const lb=state.settings.lastBackup;
+  $('#lastBackupLine').textContent=lb?t('lastBackup',{d:fmtDate(keyOf(new Date(lb)))}):t('lastBackupNone');
 }
 function renderStatus(){
   let k='sDb';
@@ -517,7 +680,11 @@ function renderPreview(){
     ?t('preview',{d:nf(f.total),p:f.prayers.length,n:nf(f.total*f.prayers.length)})
     :t('previewEmpty');
 }
-function renderAll(){renderHero();renderPrayers();renderHistory();renderStatus();}
+function updateAddLabels(){
+  $('#addTitle').textContent=t(state.editId?'editTitle':'addTitle');
+  $('#addSubmit').textContent=t(state.editId?'save':'add');
+}
+function renderAll(){renderHero();renderDaily();renderPrayers();renderHistory();renderBanner();renderBackupLine();renderStatus();}
 function applyLang(){
   document.documentElement.lang=lang;
   qsa('[data-i18n]').forEach(el=>{el.textContent=t(el.dataset.i18n);});
@@ -525,10 +692,12 @@ function applyLang(){
   qsa('[data-pn]').forEach(el=>{el.textContent=t('p_'+el.dataset.pn);});
   qsa('[data-lang]').forEach(b=>{b.setAttribute('aria-pressed',String(b.dataset.lang===lang));});
   $('#closeAdd').setAttribute('aria-label',t('close'));
+  $('#closeQada').setAttribute('aria-label',t('close'));
+  updateAddLabels();
   renderPreview();
 }
 
-/* ---------- form ---------- */
+/* ---------- forms ---------- */
 function readForm(){
   const n=(id,max)=>{const v=Math.floor(Number($(id).value));return isFinite(v)&&v>0?Math.min(v,max):0;};
   const y=n('#fy',150),m=n('#fm',1800),d=n('#fd',40000);
@@ -539,36 +708,87 @@ $('#addForm').addEventListener('submit',e=>{
   e.preventDefault();
   const f=readForm(),msg=$('#addMsg');
   if(!(f.total>0&&f.prayers.length)){msg.className='msg err';msg.textContent=t('previewEmpty');return;}
-  put(newId(),{kind:'tinggal',years:f.y,months:f.m,days:f.d,totalDays:f.total,prayers:f.prayers,note:$('#fnote').value.trim().slice(0,200),at:Date.now()});
+  const rec={kind:'tinggal',years:f.y,months:f.m,days:f.d,totalDays:f.total,prayers:f.prayers,note:$('#fnote').value.trim().slice(0,200),at:Date.now()};
+  const old=state.editId?state.entries.get(state.editId):null;
+  if(old&&old.kind==='tinggal'){rec.at=old.at;put(state.editId,rec);closeM();showToast(t('updated'));}
+  else{put(newId(),rec);closeM();showToast(t('added'));}
   ['#fy','#fm','#fd','#fnote'].forEach(s=>{$(s).value='';});
   renderPreview();
-  closeAdd();showToast(t('added'));
+});
+$('#qadaForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const msg=$('#qMsg'),date=$('#qDate').value;
+  const err=text=>{msg.className='msg err';msg.textContent=text;};
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||date>today()||date<'2000-01-01'){err(t('qDateBad'));return;}
+  const T=totals(),adds=[];
+  for(const p of PR){
+    const v=Math.floor(Number($('#q_'+p).value));
+    const n=isFinite(v)&&v>0?Math.min(v,1000000):0;
+    if(!n)continue;
+    const rem=Math.max(0,T.tot[p]-T.done[p]);
+    if(n>rem){err(t('qOver',{p:t('p_'+p),r:nf(rem)}));return;}
+    adds.push([p,n]);
+  }
+  if(!adds.length){err(t('qNone'));return;}
+  adds.forEach(a=>{
+    const id='q-'+date+'-'+a[0],ex=state.entries.get(id);
+    put(id,{kind:'qada',prayer:a[0],date:date,count:(ex&&ex.kind==='qada'?ex.count:0)+a[1],at:Date.now()});
+  });
+  closeM();showToast(t('qSaved'));
 });
 
-/* ---------- popup + toast ---------- */
-let lastFocus=null,toastTimer=null;
-function openAdd(){
-  lastFocus=document.activeElement;
-  $('#addMsg').textContent='';$('#addMsg').className='msg';
-  $('#addModal').hidden=false;document.body.style.overflow='hidden';
-  setTimeout(()=>{$('#fy').focus();},0);
+/* ---------- popups + toast ---------- */
+let openModal=null,lastFocus=null,toastTimer=null;
+function openM(el,focusSel){
+  lastFocus=document.activeElement;openModal=el;
+  el.hidden=false;document.body.style.overflow='hidden';
+  setTimeout(()=>{const f=el.querySelector(focusSel);if(f)f.focus();},0);
 }
-function closeAdd(){
-  $('#addModal').hidden=true;document.body.style.overflow='';
+function closeM(){
+  if(!openModal)return;
+  openModal.hidden=true;openModal=null;document.body.style.overflow='';
+  state.editId=null;
   if(lastFocus&&lastFocus.focus)lastFocus.focus();
+}
+function openAdd(id){
+  const e=id?state.entries.get(id):null;
+  state.editId=(e&&e.kind==='tinggal')?id:null;
+  if(state.editId){
+    $('#fy').value=e.years||'';$('#fm').value=e.months||'';$('#fd').value=e.days||'';
+    PR.forEach(p=>{$('#c_'+p).checked=e.prayers.indexOf(p)>=0;});
+    $('#fnote').value=e.note||'';
+  }else{
+    ['#fy','#fm','#fd','#fnote'].forEach(s=>{$(s).value='';});
+  }
+  $('#addMsg').textContent='';$('#addMsg').className='msg';
+  updateAddLabels();renderPreview();
+  openM($('#addModal'),'#fy');
+}
+function openQada(){
+  const T=totals(),today_=today();
+  $('#qDate').value=today_;$('#qDate').max=today_;
+  PR.forEach(p=>{
+    $('#q_'+p).value='';
+    $('#qr_'+p).textContent=t('qLeft',{n:nf(Math.max(0,T.tot[p]-T.done[p]))});
+  });
+  $('#qMsg').textContent='';$('#qMsg').className='msg';
+  openM($('#qadaModal'),'#qDate');
 }
 function showToast(text){
   const el=$('#toast');el.textContent=text;el.hidden=false;
   clearTimeout(toastTimer);toastTimer=setTimeout(()=>{el.hidden=true;},2500);
 }
-$('#openAdd').addEventListener('click',openAdd);
-$('#closeAdd').addEventListener('click',closeAdd);
-$('#addModal').addEventListener('click',e=>{if(e.target===$('#addModal'))closeAdd();});
+$('#openAdd').addEventListener('click',()=>openAdd(null));
+$('#openQada').addEventListener('click',openQada);
+$('#closeAdd').addEventListener('click',closeM);
+$('#closeQada').addEventListener('click',closeM);
+$('#addModal').addEventListener('click',e=>{if(e.target===$('#addModal'))closeM();});
+$('#qadaModal').addEventListener('click',e=>{if(e.target===$('#qadaModal'))closeM();});
 document.addEventListener('keydown',e=>{
-  if($('#addModal').hidden)return;
-  if(e.key==='Escape'){closeAdd();return;}
+  if(!openModal)return;
+  if(e.key==='Escape'){closeM();return;}
   if(e.key==='Tab'){
-    const f=qsa('#addModal button, #addModal input').filter(x=>!x.disabled&&x.offsetParent!==null);
+    const f=Array.from(openModal.querySelectorAll('button,input')).filter(x=>!x.disabled&&x.offsetParent!==null);
     if(!f.length)return;
     const first=f[0],last=f[f.length-1];
     if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
@@ -582,6 +802,14 @@ $('#plist').addEventListener('click',e=>{
   if(b.dataset.act==='inc')addQada(b.dataset.p,Number(b.dataset.n));else undoQada(b.dataset.p);
 });
 $('#allOne').addEventListener('click',()=>{PR.forEach(p=>addQada(p,1));});
+$('#goalMinus').addEventListener('click',()=>putSettings({goal:Math.max(0,state.settings.goal-1)}));
+$('#goalPlus').addEventListener('click',()=>putSettings({goal:Math.min(500,state.settings.goal+1)}));
+$('#goalInput').addEventListener('change',e=>{
+  const v=Math.floor(Number(e.target.value));
+  putSettings({goal:(isFinite(v)&&v>=0)?Math.min(v,500):state.settings.goal});
+});
+$('#bannerLater').addEventListener('click',()=>putSettings({snoozeUntil:Date.now()+864e5}));
+$('#bannerNow').addEventListener('click',()=>{doExport(true);});
 document.addEventListener('click',e=>{
   const lb=e.target.closest('button[data-lang]');
   if(lb){lang=lb.dataset.lang;try{localStorage.setItem('qada.lang',lang);}catch(x){}applyLang();renderAll();return;}
@@ -597,6 +825,7 @@ document.addEventListener('click',e=>{
     if(a==='ask'){state.pendingDelete=hb.dataset.id;renderHistory();}
     else if(a==='no'){state.pendingDelete=null;renderHistory();}
     else if(a==='yes'){const id=hb.dataset.id;state.pendingDelete=null;remove(id);}
+    else if(a==='edit'){openAdd(hb.dataset.id);}
   }
 });
 $('#moreBtn').addEventListener('click',()=>{state.limit+=50;renderHistory();});
@@ -604,12 +833,15 @@ $('#moreBtn').addEventListener('click',()=>{state.limit+=50;renderHistory();});
 /* ---------- backup ---------- */
 function backupMsg(k,p,err){const el=$('#backupMsg');el.className='msg'+(err?' err':'');el.textContent=k?t(k,p):'';}
 function exportJson(){
-  return JSON.stringify({app:'qada-solat',version:1,exportedAt:new Date().toISOString(),
+  return JSON.stringify({app:'qada-solat',version:2,exportedAt:new Date().toISOString(),
+    settings:{goal:state.settings.goal},
     entries:Array.from(state.entries).map(a=>Object.assign({id:a[0]},a[1]))},null,2);
 }
 function showFallback(){$('#fallbackBox').hidden=false;$('#fallbackTa').value=exportJson();}
-$('#exportBtn').addEventListener('click',async()=>{
+function markBackup(){putSettings({lastBackup:Date.now(),snoozeUntil:0});}
+async function doExport(fromBanner){
   if(!state.entries.size){backupMsg('noData',null,true);return;}
+  const done=()=>{markBackup();backupMsg('exported');if(fromBanner)showToast(t('exported'));};
   if(!downloads){
     try{
       const blob=new Blob([exportJson()],{type:'application/json'});
@@ -618,21 +850,22 @@ $('#exportBtn').addEventListener('click',async()=>{
       a.href=url;a.download='qada-solat-'+today()+'.json';
       document.body.appendChild(a);a.click();a.remove();
       setTimeout(()=>URL.revokeObjectURL(url),10000);
-      backupMsg('exported');
+      done();
     }catch(e){showFallback();backupMsg('exportFail',null,true);}
     return;
   }
   try{
     await downloads.save({filename:'qada-solat-'+today()+'.json',data:exportJson()});
-    backupMsg('exported');
+    done();
   }catch(e){
     if(e&&e.code==='declined'){backupMsg('cancelled');}
     else{showFallback();backupMsg('exportFail',null,true);}
   }
-});
+}
+$('#exportBtn').addEventListener('click',()=>{doExport(false);});
 $('#copyBtn').addEventListener('click',async()=>{
   const ta=$('#fallbackTa');ta.value=exportJson();
-  try{await navigator.clipboard.writeText(ta.value);backupMsg('copied');}
+  try{await navigator.clipboard.writeText(ta.value);markBackup();backupMsg('copied');}
   catch(e){ta.select();backupMsg('copyManual');}
 });
 $('#importBtn').addEventListener('click',()=>{$('#importFile').click();});
@@ -647,20 +880,23 @@ $('#importFile').addEventListener('change',async e=>{
     const items=[],seen=new Set();
     arr.slice(0,5000).forEach(r=>{
       const rec=clean(r);if(!rec)return;
-      let id=r&&typeof r.id==='string'&&ID_OK.test(r.id)?r.id:newId();
+      let id=r&&typeof r.id==='string'&&idUsable(r.id)?r.id:newId();
       while(seen.has(id))id=newId();
       seen.add(id);items.push({id:id,rec:rec});
     });
     if(!items.length)throw new Error('empty');
+    const g=j&&!Array.isArray(j)&&j.settings?Math.floor(Number(j.settings.goal)):NaN;
+    state.importGoal=(isFinite(g)&&g>=0)?Math.min(g,500):null;
     state.importItems=items;
     $('#importInfo').textContent=t('importFound',{n:nf(items.length)});
     $('#importBox').hidden=false;backupMsg('');
   }catch(err){state.importItems=null;$('#importBox').hidden=true;backupMsg('badFile',null,true);}
 });
 async function runImport(replace){
-  const items=state.importItems;if(!items)return;
-  state.importItems=null;$('#importBox').hidden=true;
+  const items=state.importItems,goal=state.importGoal;if(!items)return;
+  state.importItems=null;state.importGoal=null;$('#importBox').hidden=true;
   await bulkApply(items,replace);
+  if(replace&&goal!==null)putSettings({goal:goal});
   backupMsg('imported',{n:nf(items.length)});
 }
 $('#impMerge').addEventListener('click',()=>runImport(false));
