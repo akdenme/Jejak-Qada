@@ -12,7 +12,7 @@
 /* Layout: one column. Backup banner, hero total, today's goal, five prayer rows (hues follow the day from dawn to night), history, backup. Popups for adding, editing and logging by date. */
 :root{
   --bg:#F2F5F3; --surface:#FFFFFF; --surface2:#E7EDEA; --fg:#14211D; --muted:#566862; --line:#D3DDD8;
-  --accent:#1B6B58; --accent-fg:#FFFFFF; --danger:#B3362E; --on-danger:#FFFFFF;
+  --accent:#1B6B58; --accent-fg:#FFFFFF; --danger:#B3362E; --on-danger:#FFFFFF; --haid:#7B4FA8; --on-haid:#FFFFFF;
   --p-subuh:#4B5BB5; --p-zohor:#B8901A; --p-asar:#CC7A22; --p-maghrib:#BC4A58; --p-isyak:#2F3B73;
   --f-display:'Fraunces',Georgia,'Times New Roman',serif;
   --f-body:'Instrument Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
@@ -20,14 +20,14 @@
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --bg:#0E1613; --surface:#16211D; --surface2:#1F2D28; --fg:#E6EFEB; --muted:#9AADA6; --line:#2B3B35;
-    --accent:#4FB79A; --accent-fg:#06241C; --danger:#F07A70; --on-danger:#2A0A07;
+    --accent:#4FB79A; --accent-fg:#06241C; --danger:#F07A70; --on-danger:#2A0A07; --haid:#C29BE8; --on-haid:#1E0F2B;
     --p-subuh:#8F9CFF; --p-zohor:#E0B83F; --p-asar:#F0A04B; --p-maghrib:#E8788A; --p-isyak:#8C9BDB;
     color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
   --bg:#0E1613; --surface:#16211D; --surface2:#1F2D28; --fg:#E6EFEB; --muted:#9AADA6; --line:#2B3B35;
-  --accent:#4FB79A; --accent-fg:#06241C; --danger:#F07A70; --on-danger:#2A0A07;
+  --accent:#4FB79A; --accent-fg:#06241C; --danger:#F07A70; --on-danger:#2A0A07; --haid:#C29BE8; --on-haid:#1E0F2B;
   --p-subuh:#8F9CFF; --p-zohor:#E0B83F; --p-asar:#F0A04B; --p-maghrib:#E8788A; --p-isyak:#8C9BDB;
   color-scheme:dark;
 }
@@ -43,7 +43,7 @@ h1,h2{font-family:var(--f-display);font-weight:600;margin:0;text-wrap:balance}
 h1{font-size:26px;line-height:1.15}
 h2{font-size:19px;line-height:1.25}
 p{margin:0}
-button,input,textarea{font:inherit;color:inherit}
+button,input,textarea,select{font:inherit;color:inherit}
 button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
@@ -84,7 +84,7 @@ button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 .field{display:flex;flex-direction:column;gap:5px;min-width:0}
 .field label,.legend{font-size:13px;color:var(--muted);font-weight:500}
-input[type=number],input[type=text],input[type=date]{width:100%;min-height:44px;font-size:16px;border:1px solid var(--line);border-radius:10px;background:var(--bg);padding:0 12px}
+input[type=number],input[type=text],input[type=date],select{width:100%;min-height:44px;font-size:16px;border:1px solid var(--line);border-radius:10px;background:var(--bg);padding:0 12px}
 input[type=number]{font-variant-numeric:tabular-nums}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{position:relative}
@@ -124,6 +124,21 @@ textarea{width:100%;min-height:110px;border:1px solid var(--line);border-radius:
 .st[aria-pressed="true"][data-v="sudah"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg);font-weight:600}
 .st[aria-pressed="true"][data-v="lewat"]{background:var(--p-zohor);border-color:var(--p-zohor);color:#1B1500;font-weight:600}
 .st[aria-pressed="true"][data-v="tinggal"]{background:var(--danger);border-color:var(--danger);color:var(--on-danger);font-weight:600}
+.st[aria-pressed="true"][data-v="haid"]{background:var(--haid);border-color:var(--haid);color:var(--on-haid);font-weight:600}
+.stseg.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+.stseg.four .st{font-size:13px;padding:0 2px}
+@media (max-width:360px){.stseg.four{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.perlu{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.04em;padding:2px 8px;border-radius:99px;background:color-mix(in srgb,var(--haid) 18%,var(--surface));color:var(--fg);margin-left:6px;vertical-align:1px}
+.switch{display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer}
+.switch span{font-weight:600}
+.switch input{appearance:none;-webkit-appearance:none;flex:none;width:48px;height:28px;border-radius:99px;background:var(--surface2);border:1px solid var(--line);position:relative;cursor:pointer;margin:0;transition:background .2s}
+.switch input::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--muted);transition:transform .2s,background .2s}
+.switch input:checked{background:var(--accent);border-color:var(--accent)}
+.switch input:checked::after{transform:translateX(20px);background:var(--accent-fg)}
+.check{display:flex;align-items:flex-start;gap:10px;font-size:14px;cursor:pointer}
+.check input{width:20px;height:20px;margin:2px 0 0;flex:none;accent-color:var(--accent)}
+.fields.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (max-width:420px){.fields.two{grid-template-columns:minmax(0,1fr)}}
 .cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
 .cal-h{font-size:11px;color:var(--muted);text-align:center;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding-bottom:2px}
 .cd{border:1px solid transparent;background:var(--surface2);border-radius:10px;min-height:52px;min-width:0;padding:5px 2px 6px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:4px;cursor:pointer;font-variant-numeric:tabular-nums;font-size:13px}
@@ -135,6 +150,7 @@ textarea{width:100%;min-height:110px;border:1px solid var(--line);border-radius:
 .dots i.sudah{background:var(--accent);border-color:var(--accent)}
 .dots i.lewat{background:var(--p-zohor);border-color:var(--p-zohor)}
 .dots i.tinggal{background:var(--danger);border-color:var(--danger)}
+.dots i.haid{background:var(--haid);border-color:var(--haid)}
 .legend-row{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
 .legend-row span{display:inline-flex;align-items:center;gap:6px}
 .legend-row i{width:9px;height:9px;border-radius:50%;display:inline-block}
@@ -204,10 +220,15 @@ textarea{width:100%;min-height:110px;border:1px solid var(--line);border-radius:
       <div class="trk-date" id="trkDate" aria-live="polite"></div>
       <button type="button" class="btn small" id="trkNext">›</button>
     </div>
-    <div class="row"><button type="button" class="btn small" id="trkToday" data-i18n="trkNow"></button></div>
+    <div class="row">
+      <button type="button" class="btn small" id="trkToday" data-i18n="trkNow"></button>
+      <button type="button" class="btn small" id="openHaid" data-i18n="hdOpen" hidden></button>
+    </div>
     <ul class="plist" id="trkList"></ul>
     <p class="hint" id="trkSummary"></p>
     <p class="hint" data-i18n="trkNote"></p>
+    <p class="hint" id="trkHaidInfo" data-i18n="trkHaidInfo" hidden></p>
+    <p class="hint" id="haidNote"><span data-i18n="haidNoteA"></span> <button type="button" class="btn link" id="haidNoteBtn" data-i18n="haidNoteBtn"></button></p>
     <div class="calhead">
       <button type="button" class="btn small" id="calPrev">‹</button>
       <strong id="calTitle"></strong>
@@ -258,6 +279,10 @@ textarea{width:100%;min-height:110px;border:1px solid var(--line);border-radius:
         <div class="field"><label for="fm" data-i18n="months"></label><input type="number" id="fm" min="0" max="1800" inputmode="numeric" placeholder="0"></div>
         <div class="field"><label for="fd" data-i18n="days"></label><input type="number" id="fd" min="0" max="40000" inputmode="numeric" placeholder="0"></div>
       </div>
+      <div class="field" id="haidMonthField" hidden>
+        <label for="fh" data-i18n="haidMonth"></label>
+        <input type="number" id="fh" min="0" max="15" inputmode="numeric" placeholder="0">
+      </div>
       <div class="field">
         <span class="legend" data-i18n="which"></span>
         <div class="chips" role="group">
@@ -307,6 +332,35 @@ textarea{width:100%;min-height:110px;border:1px solid var(--line);border-radius:
     </form>
   </section>
   </div>
+  <div class="overlay" id="haidModal" hidden>
+  <section class="modal" role="dialog" aria-modal="true" aria-labelledby="hdTitle">
+    <div class="sechead">
+      <h2 id="hdTitle" data-i18n="hdTitle"></h2>
+      <button type="button" class="btn small" id="closeHaid">✕</button>
+    </div>
+    <p class="hint" data-i18n="hdHint"></p>
+    <form id="haidForm" class="panel" style="border:0;padding:0;background:transparent" novalidate>
+      <div class="fields two">
+        <div class="field"><label for="hdStart" data-i18n="hdStart"></label><input type="date" id="hdStart"></div>
+        <div class="field"><label for="hdFrom" data-i18n="hdFrom"></label><select id="hdFrom"></select></div>
+      </div>
+      <label class="check"><input type="checkbox" id="hdOngoing"><span data-i18n="hdOngoing"></span></label>
+      <div id="hdEndBox" class="panel" style="border:0;padding:0;background:transparent">
+        <div class="fields two">
+          <div class="field"><label for="hdEnd" data-i18n="hdEnd"></label><input type="date" id="hdEnd"></div>
+          <div class="field"><label for="hdPure" data-i18n="hdPure"></label><select id="hdPure"></select></div>
+        </div>
+        <label class="check"><input type="checkbox" id="hdSempat" checked><span data-i18n="hdSempat"></span></label>
+        <p class="hint" data-i18n="hdRule"></p>
+      </div>
+      <p class="preview" id="hdPreview"></p>
+      <div class="row">
+        <button type="submit" class="btn primary" data-i18n="hdSave"></button>
+        <span class="msg" id="hdMsg" role="status"></span>
+      </div>
+    </form>
+  </section>
+  </div>
   <div class="toast" id="toast" role="status" hidden></div>
 
   <section class="panel">
@@ -320,6 +374,12 @@ textarea{width:100%;min-height:110px;border:1px solid var(--line);border-radius:
     </div>
     <ul class="hist" id="hist"></ul>
     <div class="row"><button type="button" class="btn small" id="moreBtn" data-i18n="more" hidden></button></div>
+  </section>
+
+  <section class="panel" id="settingsPanel">
+    <h2 data-i18n="settingsTitle"></h2>
+    <label class="switch" for="haidToggle"><span data-i18n="haidLabel"></span><input type="checkbox" id="haidToggle" role="switch"></label>
+    <p class="hint" data-i18n="haidHint"></p>
   </section>
 
   <section class="panel">
@@ -353,7 +413,7 @@ textarea{width:100%;min-height:110px;border:1px solid var(--line);border-radius:
 (function(){
 'use strict';
 const PR=['subuh','zohor','asar','maghrib','isyak'];
-const ST=['sudah','lewat','tinggal'];
+const ST=['sudah','lewat','tinggal','haid'];
 const I18N={
 ms:{
  tagline:'Catat solat yang tertinggal, kemudian jejak qada anda.',
@@ -391,6 +451,27 @@ ms:{
  trkSummary:'{n} daripada 5 waktu sudah ditanda.',
  trkNote:'Tertinggal akan menambah 1 pada baki qada waktu itu. Lewat dikira sudah dibuat. Waktu yang tidak ditanda dibiarkan kosong.',
  trkStreak:'Streak penuh: {n} hari', calAria:'{a} sudah, {b} lewat, {c} tertinggal',
+ calAriaH:'{a} sudah, {b} lewat, {c} tertinggal, {h} haid',
+ settingsTitle:'Tetapan', haidLabel:'Ciri haid',
+ haidHint:'Untuk perempuan. Bila dihidupkan, anda boleh guna status Haid, butang Catat haid, dan tolakan haid dalam kiraan tempoh tinggal. Lelaki tidak perlu hidupkan.',
+ haidNoteA:'Perempuan?', haidNoteBtn:'Hidupkan ciri haid di Tetapan',
+ trkHaidInfo:'Haid tidak perlu diqada dan tidak memutuskan streak.',
+ st_haid:'Haid', perlu:'Perlu dibuat',
+ hdOpen:'Catat haid', hdTitle:'Catat haid',
+ hdHint:'Isi tarikh haid. Waktu yang terlibat ditanda Haid dan tidak perlu diqada.',
+ hdStart:'Tarikh mula', hdFrom:'Waktu pertama yang haid', hdOngoing:'Haid masih berlangsung',
+ hdEnd:'Tarikh habis (hari suci)', hdPure:'Suci semasa waktu',
+ hdSempat:'Sempat sekurang-kurangnya takbiratul ihram sebelum waktu itu habis',
+ hdRule:'Ikut mazhab Syafie. Suci waktu Asar: Zohor dan Asar perlu dibuat. Suci waktu Isyak: Maghrib dan Isyak perlu dibuat. Suci waktu Zohor, Maghrib atau Subuh: waktu itu sahaja. Kalau tidak sempat, waktu itu dikecualikan. Untuk istihadah atau kitaran tidak tetap, rujuk ustazah.',
+ hdSave:'Simpan haid', hdSaved:'Haid dicatat.',
+ hdPrev:'{n} waktu ditanda Haid ({a} hingga {b}).', hdNeed:'Perlu dibuat pada {d}: {p}.',
+ hdErrStart:'Pilih tarikh mula yang sah, tidak melebihi hari ini.',
+ hdErrEnd:'Tarikh habis mesti sama atau selepas tarikh mula, dan tidak melebihi hari ini.',
+ hdErrLong:'Tempoh terlalu panjang (maksimum 40 hari).',
+ hdErrOrder:'Pada hari yang sama, waktu suci mesti selepas waktu mula haid.',
+ haidMonth:'Haid sebulan (hari, pilihan)',
+ previewH:'{d} hari − {x} hari haid = {e} hari × {p} waktu = {n} solat',
+ histHaid:'Tolak haid: −{x} hari', hdZero:'Selepas tolak haid, tiada solat tinggal untuk dikira.',
  backupTitle:'Backup',
  backupText:'Backup ialah salinan data anda supaya tidak hilang. Download fail backup, kemudian simpan di Google Drive anda. Sync automatik dengan akaun Google akan ditambah dalam versi app.',
  lastBackup:'Backup terakhir: {d}', lastBackupNone:'Belum pernah backup.',
@@ -444,6 +525,27 @@ en:{
  trkSummary:'{n} of 5 prayers marked.',
  trkNote:'Missed adds 1 to that prayer’s qada balance. Late counts as done. Prayers you do not mark stay blank.',
  trkStreak:'Full-day streak: {n} day(s)', calAria:'{a} done, {b} late, {c} missed',
+ calAriaH:'{a} done, {b} late, {c} missed, {h} haid',
+ settingsTitle:'Settings', haidLabel:'Haid feature',
+ haidHint:'For women. When on, you can use the Haid status, the Log haid button, and a haid deduction in the missed-period calculation. Men do not need to turn it on.',
+ haidNoteA:'Female?', haidNoteBtn:'Turn on the haid feature in Settings',
+ trkHaidInfo:'Haid does not need to be made up and does not break your streak.',
+ st_haid:'Haid', perlu:'To be prayed',
+ hdOpen:'Log haid', hdTitle:'Log haid',
+ hdHint:'Enter the haid dates. Prayers in that period are marked Haid and do not need to be made up.',
+ hdStart:'Start date', hdFrom:'First prayer in haid', hdOngoing:'Haid is still ongoing',
+ hdEnd:'End date (day of purity)', hdPure:'Became pure during',
+ hdSempat:'There was time for at least the takbiratul ihram before that prayer time ended',
+ hdRule:'Shafi’i rule. Pure during Asr: Dhuhr and Asr must be prayed. Pure during Isha: Maghrib and Isha must be prayed. Pure during Dhuhr, Maghrib or Fajr: that prayer only. If there was not enough time, that prayer is excused. For istihadah or an irregular cycle, ask a qualified woman scholar.',
+ hdSave:'Save haid', hdSaved:'Haid logged.',
+ hdPrev:'{n} prayers marked Haid ({a} to {b}).', hdNeed:'To be prayed on {d}: {p}.',
+ hdErrStart:'Pick a valid start date, not after today.',
+ hdErrEnd:'The end date must be on or after the start date, and not after today.',
+ hdErrLong:'The period is too long (maximum 40 days).',
+ hdErrOrder:'On the same day, the pure prayer must come after the first haid prayer.',
+ haidMonth:'Haid per month (days, optional)',
+ previewH:'{d} days − {x} haid days = {e} days × {p} prayers = {n} prayers',
+ histHaid:'Haid deducted: −{x} days', hdZero:'After the haid deduction there are no missed prayers to count.',
  backupTitle:'Backup',
  backupText:'Download a backup file and save it to your Google Drive. Automatic sync with your Google account will come in the app version.',
  lastBackup:'Last backup: {d}', lastBackupNone:'Never backed up.',
@@ -470,8 +572,8 @@ const qsa=s=>Array.from(document.querySelectorAll(s));
 const nf=n=>Number(n).toLocaleString(lang==='ms'?'ms-MY':'en-GB');
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-const defaultSettings=()=>({goal:5,lastBackup:0,snoozeUntil:0});
-const state={entries:new Map(),settings:defaultSettings(),mode:'loading',slow:false,filter:'all',limit:50,pendingDelete:null,importItems:null,importGoal:null,editId:null,selDate:null,cal:null};
+const defaultSettings=()=>({goal:5,lastBackup:0,snoozeUntil:0,haid:false});
+const state={entries:new Map(),settings:defaultSettings(),mode:'loading',slow:false,filter:'all',limit:50,pendingDelete:null,importItems:null,importGoal:null,importHaid:null,editId:null,selDate:null,cal:null};
 let db=null,uid=null,downloads=null,slowTimer=null;
 const chains=new Map();
 
@@ -499,6 +601,7 @@ function cleanSettings(r){
   const g=Math.floor(Number(r.goal));if(isFinite(g)&&g>=0)d.goal=Math.min(g,500);
   const lb=Number(r.lastBackup);if(isFinite(lb)&&lb>0)d.lastBackup=lb;
   const sn=Number(r.snoozeUntil);if(isFinite(sn)&&sn>0)d.snoozeUntil=sn;
+  if(r.haid===true)d.haid=true;
   return d;
 }
 function clean(r){
@@ -511,7 +614,8 @@ function clean(r){
     const prayers=PR.filter(p=>set.has(p));
     const total=y*365+m*30+d;
     if(!prayers.length||total<=0)return null;
-    return {kind:'tinggal',years:y,months:m,days:d,totalDays:total,prayers:prayers,note:String(r.note||'').slice(0,200),at:at};
+    const hd=Math.min(15,Math.max(0,Math.floor(Number(r.haidDays))||0));
+    return {kind:'tinggal',years:y,months:m,days:d,totalDays:total,haidDays:hd,prayers:prayers,note:String(r.note||'').slice(0,200),at:at};
   }
   if(r.kind==='harian'){
     const date=String(r.date);
@@ -519,8 +623,9 @@ function clean(r){
     const src=r.status&&typeof r.status==='object'?r.status:{};
     const st={};let any=false;
     PR.forEach(p=>{if(ST.indexOf(src[p])>=0){st[p]=src[p];any=true;}});
-    if(!any)return null;
-    return {kind:'harian',date:date,status:st,at:at};
+    const perlu=Array.isArray(r.perlu)?PR.filter(p=>r.perlu.indexOf(p)>=0):[];
+    if(!any&&!perlu.length)return null;
+    return {kind:'harian',date:date,status:st,perlu:perlu,at:at};
   }
   if(r.kind==='qada'){
     if(PR.indexOf(r.prayer)<0)return null;
@@ -536,7 +641,7 @@ function totals(){
   const tot={},done={};
   PR.forEach(p=>{tot[p]=0;done[p]=0;});
   state.entries.forEach(e=>{
-    if(e.kind==='tinggal'){e.prayers.forEach(p=>{tot[p]+=e.totalDays;});}
+    if(e.kind==='tinggal'){const ef=effDays(e);e.prayers.forEach(p=>{tot[p]+=ef;});}
     else if(e.kind==='qada'){done[e.prayer]+=e.count;}
     else if(e.kind==='harian'){PR.forEach(p=>{if(e.status[p]==='tinggal')tot[p]+=1;});}
   });
@@ -547,18 +652,28 @@ function perDay(){
   state.entries.forEach(e=>{if(e.kind==='qada')per[e.date]=(per[e.date]||0)+e.count;});
   return per;
 }
-function runStreak(ok){
+function effDays(e){return Math.max(0,e.totalDays-Math.round(e.totalDays*(e.haidDays||0)/30));}
+function runStreak(ok,neutral){
+  neutral=neutral||{};
   const dates=Object.keys(ok).filter(k=>ok[k]).sort();
+  const bridged=(a,b)=>{
+    for(let k=shiftDate(a,1);k<b;k=shiftDate(k,1)){if(!neutral[k])return false;}
+    return true;
+  };
   let best=0,run=0,prev=null;
   dates.forEach(k=>{
-    if(prev&&dayDiff(prev,k)===1)run++;else run=1;
+    if(prev&&bridged(prev,k))run++;else run=1;
     if(run>best)best=run;
     prev=k;
   });
-  const d=new Date();
-  if(!ok[keyOf(d)])d.setDate(d.getDate()-1);
+  const d=new Date(),tk=keyOf(d);
+  if(!ok[tk]&&!neutral[tk])d.setDate(d.getDate()-1);
   let cur=0;
-  while(ok[keyOf(d)]){cur++;d.setDate(d.getDate()-1);}
+  for(;;){
+    const k=keyOf(d);
+    if(ok[k])cur++;else if(!neutral[k])break;
+    d.setDate(d.getDate()-1);
+  }
   return {cur:cur,best:best};
 }
 function streaks(goal,per){
@@ -568,14 +683,18 @@ function streaks(goal,per){
   return runStreak(ok);
 }
 function fullDays(){
-  const ok={};
+  const ok={},neutral={};
   state.entries.forEach(e=>{
-    if(e.kind==='harian'&&PR.every(p=>e.status[p]==='sudah'||e.status[p]==='lewat'))ok[e.date]=true;
+    if(e.kind!=='harian')return;
+    const v=PR.map(p=>e.status[p]);
+    if(v.some(x=>!x)||v.indexOf('tinggal')>=0)return;
+    if(v.every(x=>x==='haid'))neutral[e.date]=true;else ok[e.date]=true;
   });
-  return ok;
+  return {ok:ok,neutral:neutral};
 }
 function shiftDate(k,n){const a=k.split('-').map(Number);return keyOf(new Date(a[0],a[1]-1,a[2]+n));}
 function stOf(date){const e=state.entries.get('h-'+date);return e&&e.kind==='harian'?e.status:{};}
+function perluOf(date){const e=state.entries.get('h-'+date);return e&&e.kind==='harian'?e.perlu:[];}
 
 /* ---------- storage ---------- */
 function setStatusErr(){$('#statusLine').textContent=t('saveErr');}
@@ -667,8 +786,9 @@ function setStatus(date,p,v){
   const id='h-'+date,ex=state.entries.get(id);
   const st=Object.assign({},ex&&ex.kind==='harian'?ex.status:{});
   if(st[p]===v)delete st[p];else st[p]=v;
-  if(!Object.keys(st).length){if(ex)remove(id);return;}
-  put(id,{kind:'harian',date:date,status:st,at:Date.now()});
+  const pl=ex&&ex.kind==='harian'?ex.perlu:[];
+  if(!Object.keys(st).length&&!pl.length){if(ex)remove(id);return;}
+  put(id,{kind:'harian',date:date,status:st,perlu:pl,at:Date.now()});
 }
 
 /* ---------- render ---------- */
@@ -678,15 +798,18 @@ function renderTracker(){
   $('#trkNext').disabled=sel>=td;
   $('#trkPrev').disabled=sel<='2000-01-01';
   $('#trkToday').hidden=sel===td;
+  const showH=state.settings.haid===true||PR.some(p=>stt[p]==='haid');
+  const list=showH?ST:ST.slice(0,3),pl=perluOf(sel);
   $('#trkList').innerHTML=PR.map(p=>{
     const name=t('p_'+p);
-    return '<li class="trow" style="--c:var(--p-'+p+')"><span class="pname"><i class="dot"></i>'+esc(name)+'</span>'+
-      '<div class="stseg" role="group" aria-label="'+esc(name)+'">'+
-      ST.map(v=>'<button type="button" class="st" data-tp="'+p+'" data-v="'+v+'" aria-pressed="'+(stt[p]===v)+'">'+esc(t('st_'+v))+'</button>').join('')+
+    const badge=(!stt[p]&&pl.indexOf(p)>=0)?'<span class="perlu">'+esc(t('perlu'))+'</span>':'';
+    return '<li class="trow" style="--c:var(--p-'+p+')"><span><span class="pname"><i class="dot"></i>'+esc(name)+'</span>'+badge+'</span>'+
+      '<div class="stseg'+(showH?' four':'')+'" role="group" aria-label="'+esc(name)+'">'+
+      list.map(v=>'<button type="button" class="st" data-tp="'+p+'" data-v="'+v+'" aria-pressed="'+(stt[p]===v)+'">'+esc(t('st_'+v))+'</button>').join('')+
       '</div></li>';
   }).join('');
   $('#trkSummary').textContent=t('trkSummary',{n:Object.keys(stt).length});
-  const s=runStreak(fullDays());
+  const fd=fullDays(),s=runStreak(fd.ok,fd.neutral);
   $('#trkStreak').textContent=t('trkStreak',{n:s.cur})+' · '+t('best',{n:s.best});
   renderCalendar();
 }
@@ -699,9 +822,9 @@ function renderCalendar(){
   for(let i=0;i<lead;i++)h+='<div></div>';
   for(let d=1;d<=days;d++){
     const key=y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
-    const st=stOf(key),c={sudah:0,lewat:0,tinggal:0};
+    const st=stOf(key),c={sudah:0,lewat:0,tinggal:0,haid:0};
     PR.forEach(p=>{if(st[p])c[st[p]]++;});
-    const label=fmtDate(key)+': '+t('calAria',{a:c.sudah,b:c.lewat,c:c.tinggal});
+    const label=fmtDate(key)+': '+((state.settings.haid||c.haid)?t('calAriaH',{a:c.sudah,b:c.lewat,c:c.tinggal,h:c.haid}):t('calAria',{a:c.sudah,b:c.lewat,c:c.tinggal}));
     h+='<button type="button" class="cd'+(key===td?' today':'')+'" data-date="'+key+'" aria-pressed="'+(key===state.selDate)+'" aria-label="'+esc(label)+'"'+(key>td?' disabled':'')+'>'+
       '<span>'+d+'</span><span class="dots" aria-hidden="true">'+PR.map(p=>'<i class="'+(st[p]||'')+'"></i>').join('')+'</span></button>';
   }
@@ -710,8 +833,17 @@ function renderCalendar(){
   $('#calNext').disabled=(y*12+m)>=(n.getFullYear()*12+n.getMonth());
 }
 function renderLegend(){
-  const col={sudah:'var(--accent)',lewat:'var(--p-zohor)',tinggal:'var(--danger)'};
-  $('#calLegend').innerHTML=ST.map(v=>'<span><i style="background:'+col[v]+'"></i>'+esc(t('st_'+v))+'</span>').join('');
+  const col={sudah:'var(--accent)',lewat:'var(--p-zohor)',tinggal:'var(--danger)',haid:'var(--haid)'};
+  const list=state.settings.haid===true?ST:ST.slice(0,3);
+  $('#calLegend').innerHTML=list.map(v=>'<span><i style="background:'+col[v]+'"></i>'+esc(t('st_'+v))+'</span>').join('');
+}
+function renderHaidUI(){
+  const on=state.settings.haid===true;
+  $('#openHaid').hidden=!on;
+  $('#haidNote').hidden=on;
+  $('#trkHaidInfo').hidden=!on;
+  $('#haidToggle').checked=on;
+  renderLegend();
 }
 function renderHero(){
   const T=totals();
@@ -778,7 +910,9 @@ function renderHistory(){
     const e=x.e;let title,sub;
     if(e.kind==='tinggal'){
       title='<span class="kind">'+esc(t('fMissed'))+'</span>'+esc(t('missedTitle',{dur:dur(e.totalDays)}));
-      sub=esc(e.prayers.map(p=>t('p_'+p)).join(', '))+' · '+esc(t('solatCount',{n:nf(e.totalDays*e.prayers.length)}));
+      const ef=effDays(e);
+      sub=esc(e.prayers.map(p=>t('p_'+p)).join(', '))+' · '+esc(t('solatCount',{n:nf(ef*e.prayers.length)}));
+      if(e.haidDays>0)sub+='<br>'+esc(t('histHaid',{x:nf(e.totalDays-ef)}))+' ('+e.haidDays+'/30)';
       if(e.note)sub+='<br>'+esc(e.note);
     }else{
       title='<span class="kind q">'+esc(t('fQada'))+'</span>'+esc(t('qadaTitle',{p:t('p_'+e.prayer),n:nf(e.count)}));
@@ -813,15 +947,17 @@ function renderStatus(){
 }
 function renderPreview(){
   const f=readForm();
-  $('#preview').textContent=(f.total>0&&f.prayers.length)
-    ?t('preview',{d:nf(f.total),p:f.prayers.length,n:nf(f.total*f.prayers.length)})
-    :t('previewEmpty');
+  let txt;
+  if(!(f.total>0&&f.prayers.length))txt=t('previewEmpty');
+  else if(f.h>0)txt=t('previewH',{d:nf(f.total),x:nf(f.ded),e:nf(f.eff),p:f.prayers.length,n:nf(f.eff*f.prayers.length)});
+  else txt=t('preview',{d:nf(f.total),p:f.prayers.length,n:nf(f.total*f.prayers.length)});
+  $('#preview').textContent=txt;
 }
 function updateAddLabels(){
   $('#addTitle').textContent=t(state.editId?'editTitle':'addTitle');
   $('#addSubmit').textContent=t(state.editId?'save':'add');
 }
-function renderAll(){renderHero();renderTracker();renderDaily();renderPrayers();renderHistory();renderBanner();renderBackupLine();renderStatus();}
+function renderAll(){renderHaidUI();renderHero();renderTracker();renderDaily();renderPrayers();renderHistory();renderBanner();renderBackupLine();renderStatus();}
 function applyLang(){
   document.documentElement.lang=lang;
   qsa('[data-i18n]').forEach(el=>{el.textContent=t(el.dataset.i18n);});
@@ -834,6 +970,8 @@ function applyLang(){
   $('#trkNext').setAttribute('aria-label',t('trkNextAria'));
   $('#calPrev').setAttribute('aria-label',t('calPrevAria'));
   $('#calNext').setAttribute('aria-label',t('calNextAria'));
+  $('#closeHaid').setAttribute('aria-label',t('close'));
+  fillPrayerSelects();
   renderLegend();
   updateAddLabels();
   renderPreview();
@@ -843,18 +981,22 @@ function applyLang(){
 function readForm(){
   const n=(id,max)=>{const v=Math.floor(Number($(id).value));return isFinite(v)&&v>0?Math.min(v,max):0;};
   const y=n('#fy',150),m=n('#fm',1800),d=n('#fd',40000);
-  return {y:y,m:m,d:d,prayers:PR.filter(p=>$('#c_'+p).checked),total:y*365+m*30+d};
+  const hv=Math.floor(Number($('#fh').value));
+  const h=isFinite(hv)&&hv>0?Math.min(15,hv):0;
+  const total=y*365+m*30+d,ded=Math.round(total*h/30);
+  return {y:y,m:m,d:d,h:h,ded:ded,eff:total-ded,prayers:PR.filter(p=>$('#c_'+p).checked),total:total};
 }
 $('#addForm').addEventListener('input',renderPreview);
 $('#addForm').addEventListener('submit',e=>{
   e.preventDefault();
   const f=readForm(),msg=$('#addMsg');
   if(!(f.total>0&&f.prayers.length)){msg.className='msg err';msg.textContent=t('previewEmpty');return;}
-  const rec={kind:'tinggal',years:f.y,months:f.m,days:f.d,totalDays:f.total,prayers:f.prayers,note:$('#fnote').value.trim().slice(0,200),at:Date.now()};
+  if(f.eff<=0){msg.className='msg err';msg.textContent=t('hdZero');return;}
+  const rec={kind:'tinggal',years:f.y,months:f.m,days:f.d,totalDays:f.total,haidDays:f.h,prayers:f.prayers,note:$('#fnote').value.trim().slice(0,200),at:Date.now()};
   const old=state.editId?state.entries.get(state.editId):null;
   if(old&&old.kind==='tinggal'){rec.at=old.at;put(state.editId,rec);closeM();showToast(t('updated'));}
   else{put(newId(),rec);closeM();showToast(t('added'));}
-  ['#fy','#fm','#fd','#fnote'].forEach(s=>{$(s).value='';});
+  ['#fy','#fm','#fd','#fh','#fnote'].forEach(s=>{$(s).value='';});
   renderPreview();
 });
 $('#qadaForm').addEventListener('submit',e=>{
@@ -899,9 +1041,11 @@ function openAdd(id){
     $('#fy').value=e.years||'';$('#fm').value=e.months||'';$('#fd').value=e.days||'';
     PR.forEach(p=>{$('#c_'+p).checked=e.prayers.indexOf(p)>=0;});
     $('#fnote').value=e.note||'';
+    $('#fh').value=e.haidDays||'';
   }else{
-    ['#fy','#fm','#fd','#fnote'].forEach(s=>{$(s).value='';});
+    ['#fy','#fm','#fd','#fh','#fnote'].forEach(s=>{$(s).value='';});
   }
+  $('#haidMonthField').hidden=!(state.settings.haid===true||(e&&e.haidDays>0));
   $('#addMsg').textContent='';$('#addMsg').className='msg';
   updateAddLabels();renderPreview();
   openM($('#addModal'),'#fy');
@@ -920,6 +1064,84 @@ function showToast(text){
   const el=$('#toast');el.textContent=text;el.hidden=false;
   clearTimeout(toastTimer);toastTimer=setTimeout(()=>{el.hidden=true;},2500);
 }
+/* ---------- haid ---------- */
+function fillPrayerSelects(){
+  [['#hdFrom','0'],['#hdPure','4']].forEach(x=>{
+    const sel=$(x[0]),cur=sel.value||x[1];
+    sel.innerHTML=PR.map((p,i)=>'<option value="'+i+'">'+esc(t('p_'+p))+'</option>').join('');
+    sel.value=cur;
+  });
+}
+/* Shafi'i rule when haid ends in the time of prayer b: the prayer itself, plus the one it can be
+   combined with (Zohor with Asar, Maghrib with Isyak). With no time for takbiratul ihram, all up to b are excused. */
+const PURE_NEED=[[0],[1],[1,2],[3],[3,4]];
+function haidPlan(){
+  const td=today(),ongoing=$('#hdOngoing').checked;
+  const S=$('#hdStart').value,a=Number($('#hdFrom').value);
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(S)||S>td||S<'2000-01-01'||!(a>=0&&a<=4))return {err:'hdErrStart'};
+  const E=ongoing?td:$('#hdEnd').value;
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(E)||E>td||E<S)return {err:'hdErrEnd'};
+  const days=dayDiff(S,E)+1;
+  if(days>40)return {err:'hdErrLong'};
+  const b=Number($('#hdPure').value),sempat=$('#hdSempat').checked;
+  let need=[],hiEnd=4;
+  if(!ongoing){
+    if(!(b>=0&&b<=4))return {err:'hdErrEnd'};
+    if(sempat){need=PURE_NEED[b];hiEnd=need[0]-1;}else{hiEnd=b;}
+    if(days===1&&hiEnd<a)return {err:'hdErrOrder'};
+  }
+  const items=[];let haidCount=0;
+  for(let i=0;i<days;i++){
+    const d=shiftDate(S,i),last=i===days-1;
+    const lo=i===0?a:0,hi=(last&&!ongoing)?hiEnd:4;
+    const id='h-'+d,ex=state.entries.get(id)&&state.entries.get(id).kind==='harian'?state.entries.get(id):null;
+    const st=Object.assign({},ex?ex.status:{});
+    let perlu=ex?ex.perlu.slice():[];
+    for(let k=lo;k<=hi;k++){st[PR[k]]='haid';haidCount++;}
+    if(last&&!ongoing)perlu=need.map(k=>PR[k]);
+    if(Object.keys(st).length||perlu.length)items.push({id:id,rec:{kind:'harian',date:d,status:st,perlu:perlu,at:Date.now()}});
+  }
+  return {items:items,haidCount:haidCount,S:S,E:E,perlu:need};
+}
+function renderHaidPreview(){
+  $('#hdEndBox').hidden=$('#hdOngoing').checked;
+  const p=haidPlan();
+  let txt;
+  if(p.err)txt=t(p.err);
+  else{
+    txt=t('hdPrev',{n:nf(p.haidCount),a:fmtDate(p.S),b:fmtDate(p.E)});
+    if(p.perlu.length)txt+=' '+t('hdNeed',{d:fmtDate(p.E),p:p.perlu.map(k=>t('p_'+PR[k])).join(', ')});
+  }
+  $('#hdPreview').textContent=txt;
+}
+function openHaid(){
+  const td=today();
+  $('#hdStart').value=td;$('#hdStart').max=td;$('#hdEnd').value=td;$('#hdEnd').max=td;
+  $('#hdOngoing').checked=false;$('#hdSempat').checked=true;
+  $('#hdFrom').value='0';$('#hdPure').value='4';
+  $('#hdMsg').textContent='';$('#hdMsg').className='msg';
+  renderHaidPreview();
+  openM($('#haidModal'),'#hdStart');
+}
+$('#openHaid').addEventListener('click',openHaid);
+$('#closeHaid').addEventListener('click',closeM);
+$('#haidModal').addEventListener('click',e=>{if(e.target===$('#haidModal'))closeM();});
+$('#haidForm').addEventListener('input',renderHaidPreview);
+$('#haidForm').addEventListener('change',renderHaidPreview);
+$('#haidForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const p=haidPlan(),msg=$('#hdMsg');
+  if(p.err){msg.className='msg err';msg.textContent=t(p.err);return;}
+  bulkApply(p.items,false);
+  closeM();showToast(t('hdSaved'));
+  selectDate(p.E);
+});
+$('#haidToggle').addEventListener('change',e=>putSettings({haid:e.target.checked}));
+$('#haidNoteBtn').addEventListener('click',()=>{
+  const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
+  $('#settingsPanel').scrollIntoView({behavior:reduce?'auto':'smooth',block:'center'});
+  setTimeout(()=>$('#haidToggle').focus(),reduce?0:350);
+});
 $('#openAdd').addEventListener('click',()=>openAdd(null));
 $('#openQada').addEventListener('click',openQada);
 $('#closeAdd').addEventListener('click',closeM);
@@ -930,7 +1152,7 @@ document.addEventListener('keydown',e=>{
   if(!openModal)return;
   if(e.key==='Escape'){closeM();return;}
   if(e.key==='Tab'){
-    const f=Array.from(openModal.querySelectorAll('button,input')).filter(x=>!x.disabled&&x.offsetParent!==null);
+    const f=Array.from(openModal.querySelectorAll('button,input,select')).filter(x=>!x.disabled&&x.offsetParent!==null);
     if(!f.length)return;
     const first=f[0],last=f[f.length-1];
     if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
@@ -1005,7 +1227,7 @@ $('#moreBtn').addEventListener('click',()=>{state.limit+=50;renderHistory();});
 function backupMsg(k,p,err){const el=$('#backupMsg');el.className='msg'+(err?' err':'');el.textContent=k?t(k,p):'';}
 function exportJson(){
   return JSON.stringify({app:'qada-solat',version:2,exportedAt:new Date().toISOString(),
-    settings:{goal:state.settings.goal},
+    settings:{goal:state.settings.goal,haid:state.settings.haid===true},
     entries:Array.from(state.entries).map(a=>Object.assign({id:a[0]},a[1]))},null,2);
 }
 function showFallback(){$('#fallbackBox').hidden=false;$('#fallbackTa').value=exportJson();}
@@ -1058,16 +1280,20 @@ $('#importFile').addEventListener('change',async e=>{
     if(!items.length)throw new Error('empty');
     const g=j&&!Array.isArray(j)&&j.settings?Math.floor(Number(j.settings.goal)):NaN;
     state.importGoal=(isFinite(g)&&g>=0)?Math.min(g,500):null;
+    state.importHaid=(j&&!Array.isArray(j)&&j.settings&&typeof j.settings.haid==='boolean')?j.settings.haid:null;
     state.importItems=items;
     $('#importInfo').textContent=t('importFound',{n:nf(items.length)});
     $('#importBox').hidden=false;backupMsg('');
   }catch(err){state.importItems=null;$('#importBox').hidden=true;backupMsg('badFile',null,true);}
 });
 async function runImport(replace){
-  const items=state.importItems,goal=state.importGoal;if(!items)return;
-  state.importItems=null;state.importGoal=null;$('#importBox').hidden=true;
+  const items=state.importItems,goal=state.importGoal,hd=state.importHaid;if(!items)return;
+  state.importItems=null;state.importGoal=null;state.importHaid=null;$('#importBox').hidden=true;
   await bulkApply(items,replace);
-  if(replace&&goal!==null)putSettings({goal:goal});
+  const patch={};
+  if(goal!==null)patch.goal=goal;
+  if(hd!==null)patch.haid=hd;
+  if(replace&&Object.keys(patch).length)putSettings(patch);
   backupMsg('imported',{n:nf(items.length)});
 }
 $('#impMerge').addEventListener('click',()=>runImport(false));
